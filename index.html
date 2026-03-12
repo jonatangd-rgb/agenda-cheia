@@ -357,7 +357,7 @@
       <canvas id="qrCanvas" width="180" height="180"></canvas>
       <div class="pix-key-row">
         <span class="pix-key-label">Chave PIX</span>
-        <span class="pix-key-value" id="pixKeyDisplay">seu@email.com.br</span>
+        <span class="pix-key-value" id="pixKeyDisplay"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4734223207222a262e2b6924282a692535">[email&#160;protected]</a></span>
         <button class="copy-btn" id="copyBtn" onclick="copiarChave()">Copiar</button>
       </div>
     </div>
@@ -374,7 +374,7 @@
   <span class="fab-dot"></span>
 </a>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ⚙️ CONFIGURAÇÃO — substitua pelo número real (só números, com DDI e DDD)
 const WA_NUMBER = '5581987042832';
 const WA_MSG_GERAL = 'Oi! Vi o material Agenda Cheia e quero saber mais 😊';
@@ -591,9 +591,9 @@ function showWeek(id) {
 // =====================
 // PIX CONFIG — substitua pela sua chave real
 // =====================
-const PIX_CHAVE = 'jonatangd@gmail.com'; // pode ser CPF, telefone, email ou chave aleatória
-const PIX_NOME = 'Jonatan Gedeao Ribeiro de Sousa';
-const PIX_CIDADE = 'Recife';
+const PIX_CHAVE = 'jonatangd@gmail.com'; // CPF (só números), telefone (+5581...), email ou chave aleatória
+const PIX_NOME  = 'Jonatan Gedeao Ribeiro de Sousa';     // máx 25 caracteres, sem acentos
+const PIX_CIDADE = 'Recife';          // máx 15 caracteres, sem acentos
 
 let pixValorAtual = 10;
 
@@ -602,72 +602,96 @@ function openPix() {
   document.body.style.overflow = 'hidden';
   gerarQR(pixValorAtual);
 }
-
 function closePix() {
   document.getElementById('pixOverlay').classList.remove('open');
   document.body.style.overflow = '';
 }
-
 function closePixIfOutside(e) {
   if (e.target === document.getElementById('pixOverlay')) closePix();
 }
-
 function selecionarValor(valor, btn) {
   pixValorAtual = valor;
   document.querySelectorAll('.valor-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
-  const fmt = valor.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
-  document.getElementById('pixValorDisplay').textContent = fmt;
+  document.getElementById('pixValorDisplay').textContent =
+    valor.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
   gerarQR(valor);
 }
 
-function gerarQR(valor) {
-  const chave = PIX_CHAVE;
-  document.getElementById('pixKeyDisplay').textContent = chave;
-  // Gera QR code simples via API pública
-  const canvas = document.getElementById('qrCanvas');
-  const valorStr = valor.toFixed(2);
-  const qrData = encodeURIComponent('PIX:' + chave + '|' + valorStr + '|' + PIX_NOME);
-  const img = new Image();
-  img.crossOrigin = 'anonymous';
-  img.onload = function() {
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0,0,180,180);
-    ctx.drawImage(img, 0, 0, 180, 180);
-  };
-  img.onerror = function() {
-    // Fallback: desenha QR manual simples
-    desenharQRFallback(canvas, chave + '|' + valorStr);
-  };
-  img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + qrData;
+// ── Gerador de payload PIX BR Code (padrão EMV/BACEN) ──────────────────────
+function tlv(id, value) {
+  const len = String(value.length).padStart(2, '0');
+  return id + len + value;
 }
 
-function desenharQRFallback(canvas, texto) {
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0,0,180,180);
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(0,0,180,180);
-  // Padrão visual simplificado
-  ctx.fillStyle = '#1A1209';
-  // Cantos do QR
-  [[10,10],[130,10],[10,130]].forEach(([x,y])=>{
-    ctx.fillRect(x,y,40,40);
-    ctx.fillStyle='#fff';
-    ctx.fillRect(x+6,y+6,28,28);
-    ctx.fillStyle='#1A1209';
-    ctx.fillRect(x+12,y+12,16,16);
-    ctx.fillStyle='#1A1209';
-  });
-  // Texto central
-  ctx.fillStyle = '#1A1209';
-  ctx.font = '11px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('Escaneie com', 90, 92);
-  ctx.fillText('o app do banco', 90, 107);
-  // Borda do QR
-  ctx.strokeStyle = '#1A1209';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(4,4,172,172);
+function crc16(str) {
+  let crc = 0xFFFF;
+  for (let i = 0; i < str.length; i++) {
+    crc ^= str.charCodeAt(i) << 8;
+    for (let j = 0; j < 8; j++) {
+      crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
+    }
+  }
+  return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+}
+
+function gerarPayloadPIX(chave, nome, cidade, valor) {
+  // Merchant Account Info (GUI + chave)
+  const gui    = tlv('00', 'br.gov.bcb.pix');
+  const chaveT = tlv('01', chave);
+  const mai    = tlv('26', gui + chaveT);
+
+  // Transaction Amount
+  const valorStr = valor.toFixed(2);
+
+  // Additional Data — txid obrigatório (pode ser '***')
+  const txid = tlv('05', '***');
+  const add  = tlv('62', txid);
+
+  const payload =
+    tlv('00', '01')          +  // Payload Format Indicator
+    mai                      +  // Merchant Account Info
+    tlv('52', '0000')        +  // Merchant Category Code
+    tlv('53', '986')         +  // Transaction Currency (BRL)
+    tlv('54', valorStr)      +  // Transaction Amount
+    tlv('58', 'BR')          +  // Country Code
+    tlv('59', nome.slice(0,25)) +
+    tlv('60', cidade.slice(0,15)) +
+    add                      +  // Additional Data
+    '6304';                     // CRC placeholder
+
+  return payload + crc16(payload);
+}
+
+function gerarQR(valor) {
+  document.getElementById('pixKeyDisplay').textContent = PIX_CHAVE;
+  const payload = gerarPayloadPIX(PIX_CHAVE, PIX_NOME, PIX_CIDADE, valor);
+  const canvas  = document.getElementById('qrCanvas');
+  // Usa API qrserver com o payload EMV correto
+  const url = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&ecc=M&data='
+              + encodeURIComponent(payload);
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, 180, 180);
+    ctx.drawImage(img, 0, 0, 180, 180);
+  };
+  img.onerror = () => {
+    // Fallback visual — orienta usar "Copiar chave"
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,180,180);
+    ctx.fillStyle = '#F5D5DC';
+    ctx.fillRect(0,0,180,180);
+    ctx.fillStyle = '#C4556A';
+    ctx.font = 'bold 13px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Sem conexão', 90, 82);
+    ctx.font = '12px sans-serif';
+    ctx.fillText('Use "Copiar chave"', 90, 102);
+    ctx.fillText('no app do banco', 90, 119);
+  };
+  img.src = url;
 }
 
 function copiarChave() {
@@ -859,14 +883,3 @@ function copiarChave() {
     document.execCommand('copy');
     document.body.removeChild(el);
     const btn = document.getElementById('copyBtn');
-    btn.textContent = 'Copiado!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
-  });
-}
-
-renderWeekNav();
-renderContent();
-</script>
-</body>
-</html>
