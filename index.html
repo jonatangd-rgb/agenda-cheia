@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agenda Cheia — Estratégias para Salões em Recife</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --ink: #1A1209;
+    --gold: #C8972A;
+    --gold-light: #F0D080;
+    --rose: #C4556A;
+    --rose-light: #F5D5DC;
+    --teal: #2A7B6F;
+    --teal-light: #C8EAE5;
+    --sand: #E8DDD0;
+    --sand-mid: #D4C5B0;
+    --text-muted: #6B5E4E;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--cream); color: var(--ink); font-family: 'DM Sans', sans-serif; font-weight: 300; min-height: 100vh; }
+
+  /* HEADER */
+  .header { background: var(--ink); color: var(--cream); padding: 28px 24px 24px; position: sticky; top: 0; z-index: 100; }
+  .header-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 4px; }
+  .logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; letter-spacing: -0.5px; line-height: 1; }
+  .logo span { color: var(--gold-light); }
+  .week-badge { background: var(--gold); color: var(--ink); font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.04em; margin-top: 2px; }
+  .header-tagline { font-size: 13px; color: rgba(250,247,242,0.55); letter-spacing: 0.03em; }
+
+  /* WEEK NAV */
+  .week-nav { display: flex; gap: 8px; padding: 14px 24px; background: var(--sand); border-bottom: 1px solid var(--sand-mid); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .week-nav::-webkit-scrollbar { display: none; }
+  .week-btn { flex-shrink: 0; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 400; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--sand-mid); background: transparent; color: var(--text-muted); cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+  .week-btn.active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+  .week-btn.locked { opacity: 0.4; cursor: not-allowed; }
+
+  /* MAIN */
+  .main { padding: 24px 24px 120px; max-width: 600px; margin: 0 auto; }
+
+  /* WEEK INTRO */
+  .week-intro { margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--sand-mid); }
+  .week-number { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+  .week-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; line-height: 1.2; color: var(--ink); margin-bottom: 8px; }
+  .week-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+  .progress-bar-wrap { background: var(--sand); border-radius: 4px; height: 3px; margin-bottom: 16px; overflow: hidden; }
+  .progress-bar { height: 100%; background: var(--gold); border-radius: 4px; transition: width 0.4s ease; }
+
+  /* CARDS */
+  .strategy-card { background: #fff; border: 1px solid var(--sand); border-radius: 16px; margin-bottom: 14px; overflow: hidden; cursor: pointer; transition: transform 0.15s; }
+  .strategy-card:active { transform: scale(0.99); }
+
+  /* IMAGE */
+  .card-image-wrap { position: relative; width: 100%; height: 170px; background: var(--sand); overflow: hidden; }
+  .card-image { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.4s; opacity: 0; }
+  .card-image.loaded { opacity: 1; }
+  .card-image-placeholder { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 32px; background: linear-gradient(135deg, var(--sand) 0%, var(--sand-mid) 100%); transition: opacity 0.4s; }
+  .card-image.loaded + .card-image-placeholder,
+  .card-image-placeholder.hidden { opacity: 0; pointer-events: none; }
+
+  .card-header { display: flex; align-items: flex-start; gap: 14px; padding: 16px 18px 14px; }
+  .card-number { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+  .card-number.gold { background: var(--gold); color: var(--ink); }
+  .card-number.rose { background: var(--rose); color: #fff; }
+  .card-number.teal { background: var(--teal); color: #fff; }
+  .card-number.ink { background: var(--ink); color: var(--cream); }
+  .card-number.sand { background: var(--sand-mid); color: var(--ink); }
+  .card-number.rose-light { background: var(--rose-light); color: var(--rose); }
+  .card-number.teal-light { background: var(--teal-light); color: var(--teal); }
+
+  .card-title-wrap { flex: 1; }
+  .card-label { font-size: 11px; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; line-height: 1.25; color: var(--ink); }
+  .card-chevron { font-size: 16px; color: var(--text-muted); transition: transform 0.2s; padding-top: 4px; flex-shrink: 0; }
+  .strategy-card.open .card-chevron { transform: rotate(180deg); }
+
+  .card-body { display: none; padding: 0 18px 18px 68px; animation: fadeIn 0.25s ease; }
+  .strategy-card.open .card-body { display: block; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card-body p { font-size: 14px; line-height: 1.7; color: var(--text-muted); margin-bottom: 12px; }
+  .card-body p:last-child { margin-bottom: 0; }
+  .card-body strong { color: var(--ink); font-weight: 500; }
+
+  .steps-list { list-style: none; margin: 10px 0; }
+  .steps-list li { display: flex; gap: 10px; font-size: 13px; line-height: 1.6; color: var(--text-muted); padding: 6px 0; border-bottom: 1px solid var(--sand); }
+  .steps-list li:last-child { border-bottom: none; }
+  .step-dot { width: 20px; height: 20px; border-radius: 50%; background: var(--sand); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; color: var(--ink); flex-shrink: 0; margin-top: 2px; }
+
+  .highlight-box { background: var(--cream); border-left: 3px solid var(--gold); border-radius: 0 8px 8px 0; padding: 10px 12px; margin: 12px 0; font-size: 13px; line-height: 1.6; color: var(--ink); }
+
+  /* CTA */
+  .cta-section { background: var(--ink); color: var(--cream); border-radius: 16px; padding: 24px 20px; margin-top: 24px; text-align: center; }
+  .cta-section h3 { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
+  .cta-section p { font-size: 13px; color: rgba(250,247,242,0.6); margin-bottom: 16px; line-height: 1.6; }
+  .cta-btn { display: block; background: var(--gold); color: var(--ink); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; padding: 14px 20px; border-radius: 12px; border: none; cursor: pointer; width: 100%; margin-bottom: 10px; transition: opacity 0.2s; text-decoration: none; text-align: center; }
+  .cta-btn:hover { opacity: 0.9; }
+  .cta-btn.secondary { background: transparent; color: rgba(250,247,242,0.6); border: 1px solid rgba(250,247,242,0.2); font-size: 13px; padding: 10px 20px; }
+
+  /* LOCKED */
+  .locked-screen { text-align: center; padding: 60px 20px; }
+  .lock-big { font-size: 48px; margin-bottom: 16px; }
+  .locked-screen h2 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .locked-screen p { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; }
+  .locked-screen .cta-btn { background: var(--ink); color: var(--cream); display: inline-block; width: auto; padding: 14px 28px; }
+
+  /* FOOTER */
+  .footer { text-align: center; padding: 20px 24px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--sand); }
+
+  /* WHATSAPP FAB */
+  .whatsapp-fab {
+    position: fixed;
+    bottom: 24px;
+    right: 20px;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #25D366;
+    color: #fff;
+    border-radius: 50px;
+    padding: 14px 20px 14px 16px;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: fabIn 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.6s both;
+  }
+  .whatsapp-fab:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(37,211,102,0.5); }
+  .whatsapp-fab:active { transform: scale(0.97); }
+  .whatsapp-fab svg { width: 22px; height: 22px; flex-shrink: 0; }
+
+  @keyframes fabIn { from { opacity: 0; transform: translateY(30px) scale(0.85); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+  .fab-dot {
+    width: 9px; height: 9px; background: #fff; border-radius: 50%;
+    position: absolute; top: 9px; right: 9px;
+    animation: fabPulse 2s ease-in-out infinite;
+  }
+  @keyframes fabPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.5)} }
+
+  /* PIX MODAL OVERLAY */
+  .pix-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,18,9,0.65);
+    z-index: 1000;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+    backdrop-filter: blur(2px);
+  }
+  .pix-overlay.open { display: flex; animation: overlayIn 0.2s ease; }
+  @keyframes overlayIn { from{opacity:0} to{opacity:1} }
+
+  .pix-sheet {
+    background: var(--cream);
+    border-radius: 24px 24px 0 0;
+    padding: 28px 24px 40px;
+    width: 100%;
+    max-width: 480px;
+    animation: sheetUp 0.3s cubic-bezier(0.34,1.2,0.64,1);
+    position: relative;
+  }
+  @keyframes sheetUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+
+  .pix-close {
+    position: absolute;
+    top: 16px; right: 20px;
+    background: var(--sand);
+    border: none;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted);
+  }
+
+  .pix-handle {
+    width: 40px; height: 4px;
+    background: var(--sand-mid);
+    border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+
+  .pix-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+    text-align: center;
+  }
+
+  .pix-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  /* VALOR SUGERIDO */
+  .valor-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .valor-btn {
+    background: #fff;
+    border: 1.5px solid var(--sand-mid);
+    border-radius: 10px;
+    padding: 10px 4px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .valor-btn:hover { border-color: var(--gold); color: var(--ink); }
+  .valor-btn.selected { background: var(--gold); border-color: var(--gold); color: var(--ink); font-weight: 500; }
+
+  /* QR CODE */
+  .qr-wrap {
+    background: #fff;
+    border: 1px solid var(--sand);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  #qrCanvas { border-radius: 8px; }
+
+  .pix-key-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--sand);
+    border-radius: 10px;
+    padding: 10px 14px;
+    width: 100%;
+  }
+  .pix-key-label { font-size: 11px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+  .pix-key-value { font-size: 13px; color: var(--ink); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .copy-btn {
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: opacity 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .copy-btn:hover { opacity: 0.85; }
+  .copy-btn.copied { background: var(--teal); }
+
+  .pix-note {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.5;
+    margin-top: 4px;
+  }
+
+  .pix-valor-display {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .pix-valor-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+  }
+
+  /* PIX MODAL */
+  .pix-overlay { display:none; position:fixed; inset:0; background:rgba(26,18,9,0.65); z-index:1000; align-items:flex-end; justify-content:center; backdrop-filter:blur(2px); }
+  .pix-overlay.open { display:flex; animation:overlayIn 0.2s ease; }
+  @keyframes overlayIn { from{opacity:0} to{opacity:1} }
+  .pix-sheet { background:var(--cream); border-radius:24px 24px 0 0; padding:28px 24px 40px; width:100%; max-width:480px; animation:sheetUp 0.3s cubic-bezier(0.34,1.2,0.64,1); position:relative; }
+  @keyframes sheetUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+  .pix-close { position:absolute; top:16px; right:20px; background:var(--sand); border:none; width:32px; height:32px; border-radius:50%; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text-muted); }
+  .pix-handle { width:40px; height:4px; background:var(--sand-mid); border-radius:2px; margin:0 auto 20px; }
+  .pix-title { font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:var(--ink); margin-bottom:4px; text-align:center; }
+  .pix-subtitle { font-size:13px; color:var(--text-muted); text-align:center; margin-bottom:20px; line-height:1.5; }
+  .valor-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:16px; }
+  .valor-btn { background:#fff; border:1.5px solid var(--sand-mid); border-radius:10px; padding:10px 4px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; color:var(--text-muted); cursor:pointer; transition:all 0.15s; text-align:center; }
+  .valor-btn:hover { border-color:var(--gold); color:var(--ink); }
+  .valor-btn.selected { background:var(--gold); border-color:var(--gold); color:var(--ink); }
+  .qr-wrap { background:#fff; border:1px solid var(--sand); border-radius:16px; padding:20px; display:flex; flex-direction:column; align-items:center; gap:12px; margin-bottom:14px; }
+  #qrCanvas { border-radius:8px; }
+  .pix-key-row { display:flex; align-items:center; gap:8px; background:var(--sand); border-radius:10px; padding:10px 14px; width:100%; }
+  .pix-key-label { font-size:11px; color:var(--text-muted); font-weight:500; text-transform:uppercase; letter-spacing:0.05em; flex-shrink:0; }
+  .pix-key-value { font-size:13px; color:var(--ink); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .copy-btn { background:var(--ink); color:var(--cream); border:none; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:500; cursor:pointer; flex-shrink:0; transition:all 0.2s; font-family:'DM Sans',sans-serif; }
+  .copy-btn.copied { background:var(--teal); }
+  .pix-note { font-size:12px; color:var(--text-muted); text-align:center; line-height:1.5; margin-top:4px; }
+  .pix-valor-display { font-family:'Playfair Display',serif; font-size:28px; font-weight:700; color:var(--ink); }
+  .pix-valor-label { font-size:12px; color:var(--text-muted); margin-bottom:2px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="logo">Agenda <span>Cheia</span></div>
+      <div class="header-tagline">Para donos de salão em Recife</div>
+    </div>
+    <div class="week-badge" id="currentWeekBadge">Semana 1</div>
+  </div>
+</div>
+
+<div class="week-nav" id="weekNav"></div>
+
+<div class="main">
+  <div id="contentArea"></div>
+</div>
+
+<div class="footer">Agenda Cheia · Novas estratégias toda semana · Recife, PE</div>
+
+
+<!-- PIX MODAL -->
+<div class="pix-overlay" id="pixOverlay" onclick="closePixIfOutside(event)">
+  <div class="pix-sheet" id="pixSheet">
+    <div class="pix-handle"></div>
+    <button class="pix-close" onclick="closePix()">&#x2715;</button>
+    <h2 class="pix-title">Contribuir com PIX &#x1F49B;</h2>
+    <p class="pix-subtitle">Escolha um valor ou pague o que quiser.<br>Qualquer contribui&#xE7;&#xE3;o faz diferen&#xE7;a.</p>
+    <div class="valor-grid">
+      <button class="valor-btn" onclick="selecionarValor(5, this)">R$ 5</button>
+      <button class="valor-btn selected" onclick="selecionarValor(10, this)">R$ 10</button>
+      <button class="valor-btn" onclick="selecionarValor(20, this)">R$ 20</button>
+      <button class="valor-btn" onclick="selecionarValor(50, this)">R$ 50</button>
+    </div>
+    <div class="qr-wrap">
+      <div class="pix-valor-label">Valor selecionado</div>
+      <div class="pix-valor-display" id="pixValorDisplay">R$ 10,00</div>
+      <canvas id="qrCanvas" width="180" height="180"></canvas>
+      <div class="pix-key-row">
+        <span class="pix-key-label">Chave PIX</span>
+        <span class="pix-key-value" id="pixKeyDisplay">seu@email.com.br</span>
+        <button class="copy-btn" id="copyBtn" onclick="copiarChave()">Copiar</button>
+      </div>
+    </div>
+    <p class="pix-note">Ap&#xF3;s o pagamento, n&#xE3;o &#xE9; necess&#xE1;rio enviar comprovante.<br>Obrigado pelo apoio! &#x1F64F;</p>
+  </div>
+</div>
+
+<!-- WHATSAPP FLOATING BUTTON -->
+<a class="whatsapp-fab" id="waFab" href="#" target="_blank" rel="noopener">
+  <svg viewBox="0 0 24 24" fill="currentColor">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+  Falar no WhatsApp
+  <span class="fab-dot"></span>
+</a>
+
+<script>
+// ⚙️ CONFIGURAÇÃO — substitua pelo número real (só números, com DDI e DDD)
+const WA_NUMBER = '5581999999999';
+const WA_MSG_GERAL = 'Oi! Vi o material Agenda Cheia e quero saber mais 😊';
+const WA_MSG_DUVIDA = 'Oi! Tenho uma dúvida sobre as estratégias do Agenda Cheia!';
+const WA_MSG_ACESSO = 'Oi! Quero acesso antecipado ao Agenda Cheia — todas as semanas!';
+
+function waLink(msg) {
+  return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
+
+document.getElementById('waFab').href = waLink(WA_MSG_GERAL);
+
+// =====================
+// DADOS DAS SEMANAS
+// =====================
+const weeks = [
+  {
+    id: 1, label: "Semana 1", locked: false,
+    title: "Preencha a semana com quem já te conhece",
+    desc: "As estratégias mais rápidas para sair do zero não estão em novos clientes — estão na sua lista de contatos. Esta semana, trabalhamos com o que você já tem.",
+    strategies: [
+      {
+        color: "gold", label: "Estratégia 1", title: "O Resgate de Clientes Sumidos",
+        emoji: "📱",
+        image: "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=700&q=75&auto=format&fit=crop",
+        alt: "Cabeleireira sorridente com cliente no salão",
+        content: `<p>Todo salão tem clientes que sumiram sem explicação. A maioria não foi embora com raiva — só esqueceu, teve correria ou esperava que você chamasse primeiro.</p>
+          <ul class="steps-list">
+            <li><span class="step-dot">1</span><span>Abra o WhatsApp e liste os últimos 30 clientes que não aparecem há mais de 60 dias.</span></li>
+            <li><span class="step-dot">2</span><span>Mande uma mensagem individual (não lista de transmissão) com o texto abaixo.</span></li>
+            <li><span class="step-dot">3</span><span>Aguarde. Não insista. Quem tem interesse responde nas primeiras horas.</span></li>
+          </ul>
+          <div class="highlight-box">"Oi [Nome]! Tô organizando a agenda desta semana e lembrei de você. Tem algum horário que funciona? Ainda tenho algumas vagas abertas 😊"</div>
+          <p>Em média, 30% das pessoas contatadas respondem e marcam. Uma única rodada pode preencher a semana inteira.</p>`
+      },
+      {
+        color: "rose", label: "Estratégia 2", title: "Horário VIP da Manhã",
+        emoji: "☀️",
+        image: "https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?w=700&q=75&auto=format&fit=crop",
+        alt: "Salão de beleza claro e aconchegante pela manhã",
+        content: `<p>Terça, quarta e quinta entre 9h e 11h são os horários mais difíceis de preencher em qualquer salão. A solução é criar um benefício exclusivo para esse período.</p>
+          <ul class="steps-list">
+            <li><span class="step-dot">1</span><span>Escolha um serviço que você quer vender mais (hidratação, manicure, escova).</span></li>
+            <li><span class="step-dot">2</span><span>Ofereça 15% de desconto só para agendamentos nesse horário, só nesta semana.</span></li>
+            <li><span class="step-dot">3</span><span>Publique um Story e mande para a lista de transmissão do WhatsApp.</span></li>
+          </ul>
+          <div class="highlight-box">"Horário VIP da manhã: quarta e quinta das 9h às 11h com 15% off em hidratação. Só esta semana. Chama aqui pra garantir!"</div>
+          <p>Clientes que nunca foram de manhã se tornam frequentes quando a primeira vez traz vantagem.</p>`
+      },
+      {
+        color: "teal", label: "Estratégia 3", title: "O Pacote de Amiga",
+        emoji: "👯",
+        image: "https://images.unsplash.com/photo-1560869713-da86a9ec0744?w=700&q=75&auto=format&fit=crop",
+        alt: "Duas amigas sorridentes sendo atendidas no salão",
+        content: `<p>Indicação não precisa ser passiva. Você pode ativar indicações hoje mesmo com um modelo de oferta para duplas.</p>
+          <ul class="steps-list">
+            <li><span class="step-dot">1</span><span>Crie uma oferta: "Venha com uma amiga e as duas ganham 10% off".</span></li>
+            <li><span class="step-dot">2</span><span>Mande para todas as clientes da sua lista de transmissão.</span></li>
+            <li><span class="step-dot">3</span><span>Aumente para 15% se quiser mais retorno — ainda compensa mais que horário vazio.</span></li>
+          </ul>
+          <div class="highlight-box">"Essa semana tem promoção de dupla: você e uma amiga juntas ganham 10% off cada uma. Me chama aqui pra agendar as duas 🌸"</div>
+          <p>Cada dupla que entra pode gerar mais indicações. Uma única mensagem pode preencher 4 ou 5 horários.</p>`
+      },
+      {
+        color: "ink", label: "Estratégia 4", title: "O Story do Horário Disponível",
+        emoji: "📸",
+        image: "https://images.unsplash.com/photo-1611091570979-6f02c56c3124?w=700&q=75&auto=format&fit=crop",
+        alt: "Pessoa postando Stories no celular",
+        content: `<p>Parece simples demais, mas funciona: poste um Story mostrando exatamente quais horários estão livres hoje e amanhã.</p>
+          <ul class="steps-list">
+            <li><span class="step-dot">1</span><span>Tire uma foto do salão arrumado, com boa luz — pode ser da cadeira ou da bancada.</span></li>
+            <li><span class="step-dot">2</span><span>Escreva por cima: "Hoje ainda tenho: 14h, 15h30 e 17h. Quem quer?"</span></li>
+            <li><span class="step-dot">3</span><span>Coloque figurinha de resposta ou caixa de perguntas para facilitar o contato.</span></li>
+          </ul>
+          <div class="highlight-box">Mostre o salão real — não arte com Canva. O ambiente real cria desejo e urgência. Quem vê o espaço bonito e vazio sente que precisa aproveitar antes que acabe.</div>
+          <p>Faça isso todos os dias pela manhã. Em 7 dias você já tem uma audiência esperando o post diário de horários.</p>`
+      },
+      {
+        color: "sand", label: "Estratégia 5", title: "Parceria com Comércio do Bairro",
+        emoji: "🤝",
+        image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=700&q=75&auto=format&fit=crop",
+        alt: "Dois lojistas fechando parceria",
+        content: `<p>Em Recife, os bairros têm uma economia local forte: farmácias, clínicas, academias, cafeterias. Uma parceria simples pode trazer novos clientes sem gastar nada.</p>
+          <ul class="steps-list">
+            <li><span class="step-dot">1</span><span>Identifique 3 comércios próximos com público feminino similar.</span></li>
+            <li><span class="step-dot">2</span><span>Proponha uma troca: você indica seus clientes para eles, eles distribuem um cartãozinho seu.</span></li>
+            <li><span class="step-dot">3</span><span>Ofereça 10% off para quem vier indicado pela parceria.</span></li>
+          </ul>
+          <div class="highlight-box">Boas opções em Recife: clínicas de estética, pilates, lojas de roupas femininas, cafeterias e farmácias de manipulação.</div>
+          <p>Uma parceria bem feita custa só o tempo de uma visita e pode gerar clientes todo mês de forma passiva.</p>`
+      },
+      {
+        color: "rose-light", label: "Estratégia 6", title: "Reativação por Aniversário",
+        emoji: "🎂",
+        image: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=700&q=75&auto=format&fit=crop",
+        alt: "Decoração de aniversário com flores e velas",
+        content: `<p>Aniversário é o melhor motivo para entrar em contato com quem sumiu sem parecer vendedor. Se você tem a data de nascimento das clientes, use agora.</p>
+          <ul class="steps-list">
+            <li><span class="step-dot">1</span><span>Filtre no cadastro (ou WhatsApp Business) quem faz aniversário este mês.</span></li>
+            <li><span class="step-dot">2</span><span>Mande uma mensagem personalizada com oferta de aniversariante.</span></li>
+            <li><span class="step-dot">3</span><span>Se não tiver o cadastro, comece a pedir agora para toda nova cliente.</span></li>
+          </ul>
+          <div class="highlight-box">"Oi [Nome]! Vi que você faz aniversário este mês — parabéns antecipados! 🎂 Como presente, tem 20% off em qualquer serviço durante seu mês. Me chama pra agendar!"</div>
+          <p>Clientes que voltam por benefício de aniversário costumam retomar a frequência regular depois.</p>`
+      },
+      {
+        color: "teal-light", label: "Estratégia 7", title: "A Oferta de Quarta-Feira",
+        emoji: "💅",
+        image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=700&q=75&auto=format&fit=crop",
+        alt: "Tratamento capilar sendo realizado em salão",
+        content: `<p>Quarta-feira é o dia mais "morto" da semana na maioria dos salões. Mas ela tem enorme potencial se você criar um ritual semanal em torno dela.</p>
+          <ul class="steps-list">
+            <li><span class="step-dot">1</span><span>Escolha um serviço diferente toda quarta para oferecer com condição especial.</span></li>
+            <li><span class="step-dot">2</span><span>Publique no Stories toda terça à noite anunciando a oferta do dia seguinte.</span></li>
+            <li><span class="step-dot">3</span><span>Seja consistente por pelo menos 4 semanas para criar a expectativa.</span></li>
+          </ul>
+          <div class="highlight-box">Exemplos: "Quarta da Hidratação", "Quarta do Esmaltamento", "Quarta da Sobrancelha". Preço com 15–20% de desconto só na quarta. Vagas limitadas gera urgência real.</div>
+          <p>Em 3 semanas de consistência, suas clientes começam a perguntar "o que é a quarta desta semana?" — e isso vale mais que qualquer anúncio.</p>`
+      }
+    ]
+  },
+  {
+    id: 2, label: "Semana 2", locked: false,
+    title: "Transforme clientes em divulgadores",
+    desc: "Nesta semana, o foco é fazer suas clientes atuais trabalharem pela divulgação do seu salão de forma natural e espontânea.",
+    strategies: [
+      {
+        color: "gold", label: "Estratégia 1", title: "O Selfie no Salão",
+        emoji: "🤳",
+        image: "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=700&q=75&auto=format&fit=crop",
+        alt: "Mulher sorrindo e tirando selfie no espelho",
+        content: `<p>Crie um cantinho instagramável no seu salão — não precisa de obra. Um painel simples, uma planta bonita ou uma iluminação bem feita já bastam.</p>
+          <p>Incentive as clientes a tirar foto antes de sair e marcar o perfil do salão. Ofereça um brinde pequeno (uma máscara capilar) para quem postar nos Stories.</p>
+          <div class="highlight-box">Cada cliente que posta nos Stories alcança em média 150 pessoas da mesma região — melhor que qualquer impulsionamento barato.</div>`
+      },
+      {
+        color: "teal", label: "Estratégia 2", title: "Antes e Depois no WhatsApp",
+        emoji: "✨",
+        image: "https://images.unsplash.com/photo-1562322140-8baeececf3df?w=700&q=75&auto=format&fit=crop",
+        alt: "Transformação de cabelo sendo realizada em salão",
+        content: `<p>Peça autorização e publique antes e depois no seu status do WhatsApp e no feed. Em Recife, redes de amigas são fortes — uma cliente satisfeita mostra para pelo menos 3 conhecidas.</p>
+          <div class="highlight-box">Sempre marque o bairro nos posts do Instagram. "Transformação em Boa Viagem" alcança quem está naquela área e está procurando salão.</div>`
+      },
+      {
+        color: "rose", label: "Estratégia 3", title: "Programa de Pontos Simples",
+        emoji: "🎁",
+        image: "https://images.unsplash.com/photo-1607082349566-187342175e2f?w=700&q=75&auto=format&fit=crop",
+        alt: "Cartões de fidelidade e recompensas",
+        content: `<p>Crie um cartão fidelidade físico ou digital: a cada 5 visitas, a 6ª tem 50% off. Simples, tangível e eficaz.</p>
+          <p>Cartão físico funciona melhor com clientes mais velhas. Para jovens, use o controle no WhatsApp Business com etiquetas de clientes.</p>`
+      },
+      {
+        color: "ink", label: "Estratégia 4", title: "Parceria com Influenciadora Local",
+        emoji: "📲",
+        image: "https://images.unsplash.com/photo-1616587226960-4a03badbe8bf?w=700&q=75&auto=format&fit=crop",
+        alt: "Mulher gravando conteúdo de beleza no celular",
+        content: `<p>Não precisa ser famosa. Uma micro-influenciadora de Recife com 3.000 a 10.000 seguidores locais tem mais impacto que uma nacional com 500 mil.</p>
+          <div class="highlight-box">Ofereça um serviço gratuito em troca de um Reel honesto. Peça para marcar o salão, o bairro e usar a hashtag da cidade.</div>`
+      },
+      {
+        color: "sand", label: "Estratégia 5", title: "Resgate pelo Google",
+        emoji: "🔍",
+        image: "https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?w=700&q=75&auto=format&fit=crop",
+        alt: "Pessoa pesquisando negócio local no celular",
+        content: `<p>Crie ou atualize o perfil do seu salão no Google Meu Negócio. Salões com fotos recentes e avaliações aparecem para quem pesquisa "salão perto de mim" no Recife.</p>
+          <p>Peça para cada cliente satisfeita deixar uma avaliação de 5 estrelas. 10 avaliações já colocam você na frente de 80% da concorrência local.</p>`
+      },
+      {
+        color: "rose-light", label: "Estratégia 6", title: "Combo de Serviços com Nome",
+        emoji: "💆",
+        image: "https://images.unsplash.com/photo-1596704017234-0e61e41a7a6a?w=700&q=75&auto=format&fit=crop",
+        alt: "Produtos de beleza organizados em bancada de salão",
+        content: `<p>Crie combos com nomes criativos e locais. "Combo Boa Viagem", "Pacote Recifense", "Ritual do Nordeste". Nomes únicos criam identidade e facilitam o boca a boca.</p>
+          <div class="highlight-box">Quando a cliente fala "fui lá fazer o Combo Boa Viagem", ela está divulgando o nome do seu serviço — e esse nome fica na cabeça de quem ouve.</div>`
+      },
+      {
+        color: "teal-light", label: "Estratégia 7", title: "Lista VIP no WhatsApp",
+        emoji: "👑",
+        image: "https://images.unsplash.com/photo-1611746872915-64382b5c76da?w=700&q=75&auto=format&fit=crop",
+        alt: "Notificações do WhatsApp em tela de celular",
+        content: `<p>Crie uma lista de transmissão chamada "Clientes VIP" com suas melhores clientes. Mande ofertas exclusivas só para elas, 24h antes de abrir para o público geral.</p>
+          <p>O senso de exclusividade aumenta o engajamento e a fidelidade. Quem está na lista VIP se sente especial e indica o salão com mais entusiasmo.</p>`
+      }
+    ]
+  },
+  {
+    id: 3, label: "Semana 3", locked: true,
+    title: "Conquistando novas clientes em Recife",
+    desc: "Estratégias para atrair quem ainda não conhece seu salão usando os canais digitais locais.",
+    strategies: []
+  },
+  {
+    id: 4, label: "Semana 4", locked: true,
+    title: "Aumentando o ticket médio",
+    desc: "Como vender mais para quem já é sua cliente sem parecer insistente.",
+    strategies: []
+  }
+];
+
+let currentWeek = 1;
+
+function renderWeekNav() {
+  document.getElementById('weekNav').innerHTML = weeks.map(w => `
+    <button class="week-btn ${w.id === currentWeek ? 'active' : ''} ${w.locked ? 'locked' : ''}"
+      onclick="${w.locked ? 'void(0)' : `showWeek(${w.id})`}">
+      ${w.label}${w.locked ? ' 🔒' : ''}
+    </button>
+  `).join('');
+}
+
+function showWeek(id) {
+  currentWeek = id;
+  
+// =====================
+// PIX CONFIG — substitua pela sua chave real
+// =====================
+const PIX_CHAVE = 'seu@email.com.br'; // pode ser CPF, telefone, email ou chave aleatória
+const PIX_NOME = 'Agenda Cheia';
+const PIX_CIDADE = 'Recife';
+
+let pixValorAtual = 10;
+
+function openPix() {
+  document.getElementById('pixOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  gerarQR(pixValorAtual);
+}
+
+function closePix() {
+  document.getElementById('pixOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closePixIfOutside(e) {
+  if (e.target === document.getElementById('pixOverlay')) closePix();
+}
+
+function selecionarValor(valor, btn) {
+  pixValorAtual = valor;
+  document.querySelectorAll('.valor-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const fmt = valor.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+  document.getElementById('pixValorDisplay').textContent = fmt;
+  gerarQR(valor);
+}
+
+function gerarQR(valor) {
+  const chave = PIX_CHAVE;
+  document.getElementById('pixKeyDisplay').textContent = chave;
+  // Gera QR code simples via API pública
+  const canvas = document.getElementById('qrCanvas');
+  const valorStr = valor.toFixed(2);
+  const qrData = encodeURIComponent('PIX:' + chave + '|' + valorStr + '|' + PIX_NOME);
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = function() {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,180,180);
+    ctx.drawImage(img, 0, 0, 180, 180);
+  };
+  img.onerror = function() {
+    // Fallback: desenha QR manual simples
+    desenharQRFallback(canvas, chave + '|' + valorStr);
+  };
+  img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + qrData;
+}
+
+function desenharQRFallback(canvas, texto) {
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,180,180);
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0,0,180,180);
+  // Padrão visual simplificado
+  ctx.fillStyle = '#1A1209';
+  // Cantos do QR
+  [[10,10],[130,10],[10,130]].forEach(([x,y])=>{
+    ctx.fillRect(x,y,40,40);
+    ctx.fillStyle='#fff';
+    ctx.fillRect(x+6,y+6,28,28);
+    ctx.fillStyle='#1A1209';
+    ctx.fillRect(x+12,y+12,16,16);
+    ctx.fillStyle='#1A1209';
+  });
+  // Texto central
+  ctx.fillStyle = '#1A1209';
+  ctx.font = '11px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Escaneie com', 90, 92);
+  ctx.fillText('o app do banco', 90, 107);
+  // Borda do QR
+  ctx.strokeStyle = '#1A1209';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(4,4,172,172);
+}
+
+function copiarChave() {
+  const chave = PIX_CHAVE;
+  navigator.clipboard.writeText(chave).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copiado!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copiar';
+      btn.classList.remove('copied');
+    }, 2000);
+  }).catch(() => {
+    // Fallback para dispositivos sem clipboard API
+    const el = document.createElement('textarea');
+    el.value = chave;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copiado!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+renderWeekNav();
+  renderContent();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleCard(idx) {
+  document.getElementById(`card-${idx}`).classList.toggle('open');
+}
+
+function renderContent() {
+  const week = weeks.find(w => w.id === currentWeek);
+  const area = document.getElementById('contentArea');
+  document.getElementById('currentWeekBadge').textContent = week.label;
+
+  if (week.locked) {
+    area.innerHTML = `
+      <div class="locked-screen">
+        <div class="lock-big">🔒</div>
+        <h2>${week.title}</h2>
+        <p>${week.desc}<br><br>Esta semana ainda não foi liberada. Volte em breve ou fale no WhatsApp para acesso antecipado a todas as semanas.</p>
+        <a class="cta-btn" href="${waLink(WA_MSG_ACESSO)}" target="_blank">Quero acesso antecipado 🚀</a>
+      </div>`;
+    return;
+  }
+
+  const progressPct = Math.round((week.id / weeks.length) * 100);
+
+  area.innerHTML = `
+    <div class="week-intro">
+      <div class="week-number">Semana ${week.id} de ${weeks.length}</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" style="width:${progressPct}%"></div></div>
+      <h1 class="week-title">${week.title}</h1>
+      <p class="week-desc">${week.desc}</p>
+    </div>
+
+    ${week.strategies.map((s, i) => `
+      <div class="strategy-card" id="card-${i}" onclick="toggleCard(${i})">
+        <div class="card-image-wrap">
+          <img class="card-image" src="${s.image}" alt="${s.alt}" loading="lazy"
+            onload="this.classList.add('loaded'); this.nextElementSibling.classList.add('hidden')">
+          <div class="card-image-placeholder">${s.emoji}</div>
+        </div>
+        <div class="card-header">
+          <div class="card-number ${s.color}">${i + 1}</div>
+          <div class="card-title-wrap">
+            <div class="card-label">${s.label}</div>
+            <div class="card-title">${s.title}</div>
+          </div>
+          <div class="card-chevron">▾</div>
+        </div>
+        <div class="card-body">${s.content}</div>
+      </div>
+    `).join('')}
+
+    <div class="cta-section">
+      <h3>Valeu alguma coisa pra você?</h3>
+      <p>Este material é gratuito. Se as estratégias ajudarem a preencher sua agenda, considere contribuir com qualquer valor — isso permite continuar criando conteúdo toda semana.</p>
+      <button class="cta-btn" onclick="openPix()">Contribuir com qualquer valor 💛</button>
+      <a class="cta-btn secondary" href="${waLink(WA_MSG_DUVIDA)}" target="_blank">Tirar dúvida no WhatsApp →</a>
+    </div>`;
+}
+
+
+// =====================
+// PIX CONFIG — substitua pela sua chave real
+// =====================
+const PIX_CHAVE = 'seu@email.com.br'; // pode ser CPF, telefone, email ou chave aleatória
+const PIX_NOME = 'Agenda Cheia';
+const PIX_CIDADE = 'Recife';
+
+let pixValorAtual = 10;
+
+function openPix() {
+  document.getElementById('pixOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  gerarQR(pixValorAtual);
+}
+
+function closePix() {
+  document.getElementById('pixOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closePixIfOutside(e) {
+  if (e.target === document.getElementById('pixOverlay')) closePix();
+}
+
+function selecionarValor(valor, btn) {
+  pixValorAtual = valor;
+  document.querySelectorAll('.valor-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const fmt = valor.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+  document.getElementById('pixValorDisplay').textContent = fmt;
+  gerarQR(valor);
+}
+
+function gerarQR(valor) {
+  const chave = PIX_CHAVE;
+  document.getElementById('pixKeyDisplay').textContent = chave;
+  // Gera QR code simples via API pública
+  const canvas = document.getElementById('qrCanvas');
+  const valorStr = valor.toFixed(2);
+  const qrData = encodeURIComponent('PIX:' + chave + '|' + valorStr + '|' + PIX_NOME);
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = function() {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,180,180);
+    ctx.drawImage(img, 0, 0, 180, 180);
+  };
+  img.onerror = function() {
+    // Fallback: desenha QR manual simples
+    desenharQRFallback(canvas, chave + '|' + valorStr);
+  };
+  img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + qrData;
+}
+
+function desenharQRFallback(canvas, texto) {
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,180,180);
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0,0,180,180);
+  // Padrão visual simplificado
+  ctx.fillStyle = '#1A1209';
+  // Cantos do QR
+  [[10,10],[130,10],[10,130]].forEach(([x,y])=>{
+    ctx.fillRect(x,y,40,40);
+    ctx.fillStyle='#fff';
+    ctx.fillRect(x+6,y+6,28,28);
+    ctx.fillStyle='#1A1209';
+    ctx.fillRect(x+12,y+12,16,16);
+    ctx.fillStyle='#1A1209';
+  });
+  // Texto central
+  ctx.fillStyle = '#1A1209';
+  ctx.font = '11px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Escaneie com', 90, 92);
+  ctx.fillText('o app do banco', 90, 107);
+  // Borda do QR
+  ctx.strokeStyle = '#1A1209';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(4,4,172,172);
+}
+
+function copiarChave() {
+  const chave = PIX_CHAVE;
+  navigator.clipboard.writeText(chave).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copiado!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copiar';
+      btn.classList.remove('copied');
+    }, 2000);
+  }).catch(() => {
+    // Fallback para dispositivos sem clipboard API
+    const el = document.createElement('textarea');
+    el.value = chave;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copiado!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+renderWeekNav();
+renderContent();
+</script>
+</body>
+</html>
