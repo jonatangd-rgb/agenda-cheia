@@ -3,531 +3,362 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agenda Cheia — Estratégias para Salões em Recife</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Agenda Cheia</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --cream: #FAF7F2; --ink: #1A1209; --gold: #C8972A; --gold-light: #F0D080;
-    --rose: #C4556A; --rose-light: #F5D5DC; --teal: #2A7B6F; --teal-light: #C8EAE5;
-    --sand: #E8DDD0; --sand-mid: #D4C5B0; --text-muted: #6B5E4E;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--cream); color: var(--ink); font-family: 'DM Sans', sans-serif; font-weight: 300; min-height: 100vh; }
+:root {
+  --cream:#FAF7F2; --ink:#1A1209; --gold:#C8972A; --gold-light:#F0D080;
+  --rose:#C4556A; --rose-light:#F5D5DC; --teal:#2A7B6F; --teal-light:#C8EAE5;
+  --sand:#E8DDD0; --sand-mid:#D4C5B0; --muted:#6B5E4E;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--cream);color:var(--ink);font-family:'Plus Jakarta Sans',sans-serif;font-weight:300;min-height:100vh;}
 
-  /* HEADER */
-  .header { background: var(--ink); color: var(--cream); padding: 28px 24px 24px; position: sticky; top: 0; z-index: 100; }
-  .header-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 4px; }
-  .logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; letter-spacing: -0.5px; line-height: 1; }
-  .logo span { color: var(--gold-light); }
-  .week-badge { background: var(--gold); color: var(--ink); font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.04em; margin-top: 2px; }
-  .header-tagline { font-size: 13px; color: rgba(250,247,242,0.55); letter-spacing: 0.03em; }
+/* HEADER */
+.hdr{background:var(--ink);color:var(--cream);padding:24px 20px 20px;position:sticky;top:0;z-index:100;}
+.hdr-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2px;}
+.logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.5px;line-height:1;}
+.logo span{color:var(--gold-light);}
+.wbadge{background:var(--gold);color:var(--ink);font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;}
+.tagline{font-size:12px;color:rgba(250,247,242,0.5);margin-top:2px;}
 
-  /* WEEK NAV */
-  .week-nav { display: flex; gap: 8px; padding: 14px 24px; background: var(--sand); border-bottom: 1px solid var(--sand-mid); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-  .week-nav::-webkit-scrollbar { display: none; }
-  .week-btn { flex-shrink: 0; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 400; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--sand-mid); background: transparent; color: var(--text-muted); cursor: pointer; transition: all 0.2s; white-space: nowrap; }
-  .week-btn.active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
-  .week-btn.locked { opacity: 0.4; cursor: not-allowed; }
+/* NAV */
+.wnav{display:flex;gap:8px;padding:12px 20px;background:var(--sand);border-bottom:1px solid var(--sand-mid);overflow-x:auto;scrollbar-width:none;}
+.wnav::-webkit-scrollbar{display:none;}
+.wbtn{flex-shrink:0;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:400;padding:6px 14px;border-radius:20px;border:1px solid var(--sand-mid);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap;}
+.wbtn.active{background:var(--ink);color:var(--cream);border-color:var(--ink);}
+.wbtn.locked{opacity:.4;cursor:not-allowed;}
 
-  /* MAIN */
-  .main { padding: 24px 24px 120px; max-width: 600px; margin: 0 auto; }
+/* MAIN */
+.main{padding:20px 20px 110px;max-width:600px;margin:0 auto;}
 
-  /* WEEK INTRO */
-  .week-intro { margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--sand-mid); }
-  .week-number { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
-  .week-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; line-height: 1.2; color: var(--ink); margin-bottom: 8px; }
-  .week-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
-  .progress-bar-wrap { background: var(--sand); border-radius: 4px; height: 3px; margin-bottom: 16px; overflow: hidden; }
-  .progress-bar { height: 100%; background: var(--gold); border-radius: 4px; }
+/* INTRO */
+.wintro{margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid var(--sand-mid);}
+.wnumber{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.wtitle{font-family:'Syne',sans-serif;font-size:24px;font-weight:700;line-height:1.2;color:var(--ink);margin-bottom:7px;}
+.wdesc{font-size:14px;color:var(--muted);line-height:1.6;}
+.pbar-wrap{background:var(--sand);border-radius:4px;height:3px;margin-bottom:14px;overflow:hidden;}
+.pbar{height:100%;background:var(--gold);border-radius:4px;}
 
-  /* CARDS */
-  .strategy-card { background: #fff; border: 1px solid var(--sand); border-radius: 16px; margin-bottom: 14px; overflow: hidden; cursor: pointer; transition: transform 0.15s; }
-  .strategy-card:active { transform: scale(0.99); }
-  .card-image-wrap { position: relative; width: 100%; height: 170px; background: var(--sand); overflow: hidden; }
-  .card-image { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.4s; opacity: 0; }
-  .card-image.loaded { opacity: 1; }
-  .card-image-placeholder { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 40px; }
-  .card-image-placeholder.hidden { opacity: 0; }
-  .card-header { display: flex; align-items: flex-start; gap: 14px; padding: 16px 18px 14px; }
-  .card-number { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
-  .card-number.gold { background: var(--gold); color: var(--ink); }
-  .card-number.rose { background: var(--rose); color: #fff; }
-  .card-number.teal { background: var(--teal); color: #fff; }
-  .card-number.ink { background: var(--ink); color: var(--cream); }
-  .card-number.sand { background: var(--sand-mid); color: var(--ink); }
-  .card-number.rose-light { background: var(--rose-light); color: var(--rose); }
-  .card-number.teal-light { background: var(--teal-light); color: var(--teal); }
-  .card-title-wrap { flex: 1; }
-  .card-label { font-size: 11px; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
-  .card-title { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; line-height: 1.25; color: var(--ink); }
-  .card-chevron { font-size: 16px; color: var(--text-muted); transition: transform 0.2s; padding-top: 4px; flex-shrink: 0; }
-  .strategy-card.open .card-chevron { transform: rotate(180deg); }
-  .card-body { display: none; padding: 0 18px 18px 68px; animation: fadeIn 0.25s ease; }
-  .strategy-card.open .card-body { display: block; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
-  .card-body p { font-size: 14px; line-height: 1.7; color: var(--text-muted); margin-bottom: 12px; }
-  .card-body p:last-child { margin-bottom: 0; }
-  .card-body strong { color: var(--ink); font-weight: 500; }
-  .steps-list { list-style: none; margin: 10px 0; }
-  .steps-list li { display: flex; gap: 10px; font-size: 13px; line-height: 1.6; color: var(--text-muted); padding: 6px 0; border-bottom: 1px solid var(--sand); }
-  .steps-list li:last-child { border-bottom: none; }
-  .step-dot { width: 20px; height: 20px; border-radius: 50%; background: var(--sand); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; color: var(--ink); flex-shrink: 0; margin-top: 2px; }
-  .highlight-box { background: var(--cream); border-left: 3px solid var(--gold); border-radius: 0 8px 8px 0; padding: 10px 12px; margin: 12px 0; font-size: 13px; line-height: 1.6; color: var(--ink); }
+/* CARDS */
+.card{background:#fff;border:1px solid var(--sand);border-radius:14px;margin-bottom:12px;overflow:hidden;cursor:pointer;transition:transform .15s;}
+.card:active{transform:scale(.99);}
+.cimg-wrap{position:relative;width:100%;height:120px;background:var(--sand);overflow:hidden;}
+.cimg{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .4s;opacity:0;}
+.cimg.loaded{opacity:1;}
+.cimg-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:36px;}
+.cimg-ph.hidden{opacity:0;}
+.chdr{display:flex;align-items:flex-start;gap:12px;padding:14px 16px 12px;}
+.cnum{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;flex-shrink:0;margin-top:1px;}
+.cnum.gold{background:var(--gold);color:var(--ink);}
+.cnum.rose{background:var(--rose);color:#fff;}
+.cnum.teal{background:var(--teal);color:#fff;}
+.cnum.ink{background:var(--ink);color:var(--cream);}
+.cnum.sand{background:var(--sand-mid);color:var(--ink);}
+.cnum.rose-light{background:var(--rose-light);color:var(--rose);}
+.cnum.teal-light{background:var(--teal-light);color:var(--teal);}
+.ctw{flex:1;}
+.clabel{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.ctitle{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;line-height:1.25;color:var(--ink);}
+.cchev{font-size:15px;color:var(--muted);transition:transform .2s;padding-top:3px;flex-shrink:0;}
+.card.open .cchev{transform:rotate(180deg);}
+.cbody{display:none;padding:0 16px 16px 62px;animation:fadeIn .2s ease;}
+.card.open .cbody{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.cbody p{font-size:13px;line-height:1.7;color:var(--muted);margin-bottom:10px;}
+.cbody p:last-child{margin-bottom:0;}
+.cbody strong{color:var(--ink);font-weight:500;}
+.slist{list-style:none;margin:8px 0;}
+.slist li{display:flex;gap:9px;font-size:13px;line-height:1.6;color:var(--muted);padding:5px 0;border-bottom:1px solid var(--sand);}
+.slist li:last-child{border-bottom:none;}
+.sdot{width:19px;height:19px;border-radius:50%;background:var(--sand);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--ink);flex-shrink:0;margin-top:2px;}
+.hbox{background:var(--cream);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:9px 11px;margin:10px 0;font-size:13px;line-height:1.6;color:var(--ink);}
 
-  /* CTA */
-  .cta-section { background: var(--ink); color: var(--cream); border-radius: 16px; padding: 24px 20px; margin-top: 24px; text-align: center; }
-  .cta-section h3 { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
-  .cta-section p { font-size: 13px; color: rgba(250,247,242,0.6); margin-bottom: 16px; line-height: 1.6; }
-  .cta-btn { display: block; background: var(--gold); color: var(--ink); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; padding: 14px 20px; border-radius: 12px; border: none; cursor: pointer; width: 100%; margin-bottom: 10px; transition: opacity 0.2s; text-decoration: none; text-align: center; }
-  .cta-btn:hover { opacity: 0.9; }
-  .cta-btn.secondary { background: transparent; color: rgba(250,247,242,0.6); border: 1px solid rgba(250,247,242,0.2); font-size: 13px; padding: 10px 20px; }
+/* CTA */
+.cta{background:var(--ink);color:var(--cream);border-radius:14px;padding:22px 18px;margin-top:20px;text-align:center;}
+.cta h3{font-family:'Syne',sans-serif;font-size:19px;font-weight:700;margin-bottom:7px;line-height:1.3;}
+.cta p{font-size:13px;color:rgba(250,247,242,.6);margin-bottom:14px;line-height:1.6;}
+.btn{display:block;background:var(--gold);color:var(--ink);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;padding:13px 18px;border-radius:11px;border:none;cursor:pointer;width:100%;margin-bottom:9px;transition:opacity .2s;text-decoration:none;text-align:center;}
+.btn:hover{opacity:.9;}
+.btn.sec{background:transparent;color:rgba(250,247,242,.6);border:1px solid rgba(250,247,242,.2);font-size:13px;padding:9px 18px;}
 
-  /* LOCKED */
-  .locked-screen { text-align: center; padding: 60px 20px; }
-  .lock-big { font-size: 48px; margin-bottom: 16px; }
-  .locked-screen h2 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-  .locked-screen p { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; }
-  .locked-screen .cta-btn { background: var(--ink); color: var(--cream); display: inline-block; width: auto; padding: 14px 28px; }
+/* LOCKED */
+.lscreen{text-align:center;padding:55px 20px;}
+.lbig{font-size:44px;margin-bottom:14px;}
+.lscreen h2{font-family:'Syne',sans-serif;font-size:21px;font-weight:700;margin-bottom:7px;}
+.lscreen p{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:18px;}
+.lscreen .btn{background:var(--ink);color:var(--cream);display:inline-block;width:auto;padding:13px 26px;}
 
-  /* FOOTER */
-  .footer { text-align: center; padding: 20px 24px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--sand); }
+/* FOOTER */
+.footer{text-align:center;padding:18px 20px;font-size:12px;color:var(--muted);border-top:1px solid var(--sand);}
 
-  /* PIX MODAL */
-  .pix-overlay { display: none; position: fixed; inset: 0; background: rgba(26,18,9,0.65); z-index: 1000; align-items: flex-end; justify-content: center; backdrop-filter: blur(2px); }
-  .pix-overlay.open { display: flex; animation: overlayIn 0.2s ease; }
-  @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
-  .pix-sheet { background: var(--cream); border-radius: 24px 24px 0 0; padding: 28px 24px 40px; width: 100%; max-width: 480px; animation: sheetUp 0.3s cubic-bezier(0.34,1.2,0.64,1); position: relative; }
-  @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-  .pix-close { position: absolute; top: 16px; right: 20px; background: var(--sand); border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
-  .pix-handle { width: 40px; height: 4px; background: var(--sand-mid); border-radius: 2px; margin: 0 auto 20px; }
-  .pix-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 4px; text-align: center; }
-  .pix-subtitle { font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 20px; line-height: 1.5; }
-  .valor-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 16px; }
-  .valor-btn { background: #fff; border: 1.5px solid var(--sand-mid); border-radius: 10px; padding: 10px 4px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: all 0.15s; text-align: center; }
-  .valor-btn:hover { border-color: var(--gold); color: var(--ink); }
-  .valor-btn.selected { background: var(--gold); border-color: var(--gold); color: var(--ink); }
-  .qr-wrap { background: #fff; border: 1px solid var(--sand); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 14px; }
-  #qrCanvas { border-radius: 8px; display: block; }
-  .pix-key-row { display: flex; align-items: center; gap: 8px; background: var(--sand); border-radius: 10px; padding: 10px 14px; width: 100%; }
-  .pix-key-label { font-size: 11px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
-  .pix-key-value { font-size: 13px; color: var(--ink); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .copy-btn { background: var(--ink); color: var(--cream); border: none; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 500; cursor: pointer; flex-shrink: 0; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
-  .copy-btn.copied { background: var(--teal); }
-  .pix-note { font-size: 12px; color: var(--text-muted); text-align: center; line-height: 1.5; margin-top: 4px; }
-  .pix-valor-display { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--ink); }
-  .pix-valor-label { font-size: 12px; color: var(--text-muted); margin-bottom: 2px; }
+/* PIX MODAL */
+.pix-ov{display:none;position:fixed;inset:0;background:rgba(26,18,9,.65);z-index:1000;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);}
+.pix-ov.open{display:flex;animation:ovIn .2s ease;}
+@keyframes ovIn{from{opacity:0}to{opacity:1}}
+.pix-sh{background:var(--cream);border-radius:22px 22px 0 0;padding:26px 22px 38px;width:100%;max-width:480px;animation:shUp .28s cubic-bezier(.34,1.2,.64,1);position:relative;}
+@keyframes shUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.pix-close{position:absolute;top:14px;right:18px;background:var(--sand);border:none;width:30px;height:30px;border-radius:50%;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);}
+.pix-handle{width:38px;height:4px;background:var(--sand-mid);border-radius:2px;margin:0 auto 18px;}
+.pix-title{font-family:'Syne',sans-serif;font-size:21px;font-weight:700;color:var(--ink);margin-bottom:3px;text-align:center;}
+.pix-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:18px;line-height:1.5;}
+.vgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:14px;}
+.vbtn{background:#fff;border:1.5px solid var(--sand-mid);border-radius:9px;padding:9px 4px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;text-align:center;}
+.vbtn:hover{border-color:var(--gold);color:var(--ink);}
+.vbtn.sel{background:var(--gold);border-color:var(--gold);color:var(--ink);}
+.qr-wrap{background:#fff;border:1px solid var(--sand);border-radius:14px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:11px;margin-bottom:12px;}
+#qrCanvas{border-radius:7px;display:block;}
+.pkey-row{display:flex;align-items:center;gap:7px;background:var(--sand);border-radius:9px;padding:9px 12px;width:100%;}
+.pkey-lbl{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;flex-shrink:0;}
+.pkey-val{font-size:13px;color:var(--ink);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cpbtn{background:var(--ink);color:var(--cream);border:none;border-radius:7px;padding:6px 11px;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif;}
+.cpbtn.copied{background:var(--teal);}
+.pix-note{font-size:12px;color:var(--muted);text-align:center;line-height:1.5;margin-top:3px;}
+.pval-disp{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;color:var(--ink);}
+.pval-lbl{font-size:12px;color:var(--muted);margin-bottom:1px;}
 
-  /* WHATSAPP FAB */
-  .whatsapp-fab { position: fixed; bottom: 24px; right: 20px; z-index: 999; display: flex; align-items: center; gap: 10px; background: #25D366; color: #fff; border-radius: 50px; padding: 14px 20px 14px 16px; box-shadow: 0 4px 20px rgba(37,211,102,0.4); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; animation: fabIn 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.6s both; }
-  .whatsapp-fab:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(37,211,102,0.5); }
-  .whatsapp-fab:active { transform: scale(0.97); }
-  .whatsapp-fab svg { width: 22px; height: 22px; flex-shrink: 0; }
-  @keyframes fabIn { from { opacity: 0; transform: translateY(30px) scale(0.85); } to { opacity: 1; transform: translateY(0) scale(1); } }
-  .fab-dot { width: 9px; height: 9px; background: #fff; border-radius: 50%; position: absolute; top: 9px; right: 9px; animation: fabPulse 2s ease-in-out infinite; }
-  @keyframes fabPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.5)} }
+/* WA FAB */
+.wafab{position:fixed;bottom:22px;right:18px;z-index:999;display:flex;align-items:center;gap:9px;background:#25D366;color:#fff;border-radius:50px;padding:13px 18px 13px 15px;box-shadow:0 4px 18px rgba(37,211,102,.4);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;text-decoration:none;transition:transform .2s,box-shadow .2s;animation:fabIn .5s cubic-bezier(.34,1.56,.64,1) .5s both;}
+.wafab:hover{transform:translateY(-2px);box-shadow:0 7px 26px rgba(37,211,102,.5);}
+.wafab svg{width:21px;height:21px;flex-shrink:0;}
+@keyframes fabIn{from{opacity:0;transform:translateY(28px) scale(.85)}to{opacity:1;transform:translateY(0) scale(1)}}
+.fabdot{width:8px;height:8px;background:#fff;border-radius:50%;position:absolute;top:9px;right:9px;animation:fp 2s ease-in-out infinite;}
+@keyframes fp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.5)}}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-top">
+<div class="hdr">
+  <div class="hdr-top">
     <div>
       <div class="logo">Agenda <span>Cheia</span></div>
-      <div class="header-tagline">Para donos de salão em Recife</div>
+      <div class="tagline">Para donos de salão em Recife</div>
     </div>
-    <div class="week-badge" id="currentWeekBadge">Semana 1</div>
+    <div class="wbadge" id="wbadge">Semana 1</div>
   </div>
 </div>
 
-<div class="week-nav" id="weekNav"></div>
-
-<div class="main">
-  <div id="contentArea"></div>
-</div>
-
-<div class="footer">Agenda Cheia · Novas estratégias toda semana · Recife, PE</div>
+<div class="wnav" id="wnav"></div>
+<div class="main"><div id="area"></div></div>
+<div class="footer">Agenda Cheia &middot; Novas estratégias toda semana &middot; Recife, PE</div>
 
 <!-- PIX MODAL -->
-<div class="pix-overlay" id="pixOverlay" onclick="closePixIfOutside(event)">
-  <div class="pix-sheet">
+<div class="pix-ov" id="pixOv" onclick="closePixOut(event)">
+  <div class="pix-sh">
     <div class="pix-handle"></div>
     <button class="pix-close" onclick="closePix()">&#x2715;</button>
     <h2 class="pix-title">Contribuir com PIX &#x1F49B;</h2>
-    <p class="pix-subtitle">Escolha um valor ou pague o que quiser.<br>Qualquer contribui&#xE7;&#xE3;o faz diferen&#xE7;a.</p>
-    <div class="valor-grid">
-      <button class="valor-btn" onclick="selecionarValor(5,this)">R$ 5</button>
-      <button class="valor-btn selected" onclick="selecionarValor(10,this)">R$ 10</button>
-      <button class="valor-btn" onclick="selecionarValor(20,this)">R$ 20</button>
-      <button class="valor-btn" onclick="selecionarValor(50,this)">R$ 50</button>
+    <p class="pix-sub">Escolha um valor ou pague o que quiser.<br>Qualquer contribui&#xE7;&#xE3;o faz diferen&#xE7;a.</p>
+    <div class="vgrid">
+      <button class="vbtn" onclick="selVal(5,this)">R$ 5</button>
+      <button class="vbtn sel" onclick="selVal(10,this)">R$ 10</button>
+      <button class="vbtn" onclick="selVal(20,this)">R$ 20</button>
+      <button class="vbtn" onclick="selVal(50,this)">R$ 50</button>
     </div>
     <div class="qr-wrap">
-      <div class="pix-valor-label">Valor selecionado</div>
-      <div class="pix-valor-display" id="pixValorDisplay">R$ 10,00</div>
+      <div class="pval-lbl">Valor selecionado</div>
+      <div class="pval-disp" id="pvalDisp">R$ 10,00</div>
       <canvas id="qrCanvas" width="180" height="180"></canvas>
-      <div class="pix-key-row">
-        <span class="pix-key-label">Chave PIX</span>
-        <span class="pix-key-value" id="pixKeyDisplay">jonatangd@gmail.com</span>
-        <button class="copy-btn" id="copyBtn" onclick="copiarChave()">Copiar</button>
+      <div class="pkey-row">
+        <span class="pkey-lbl">Chave PIX</span>
+        <span class="pkey-val">jonatangd@gmail.com</span>
+        <button class="cpbtn" id="cpbtn" onclick="copiarPix()">Copiar</button>
       </div>
     </div>
-    <p class="pix-note">Ap&#xF3;s o pagamento, n&#xE3;o &#xE9; necess&#xE1;rio enviar comprovante.<br>Obrigado pelo apoio! &#x1F64F;</p>
+    <p class="pix-note">Ap&#xF3;s o pagamento, n&#xE3;o &#xE9; necess&#xE1;rio enviar comprovante. Obrigado! &#x1F64F;</p>
   </div>
 </div>
 
-<!-- WHATSAPP FAB -->
-<a class="whatsapp-fab" id="waFab" href="https://wa.me/5581987042832?text=Oi!%20Vi%20o%20material%20Agenda%20Cheia%20e%20quero%20saber%20mais%20%F0%9F%98%8A" target="_blank" rel="noopener">
-  <svg viewBox="0 0 24 24" fill="currentColor">
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-  </svg>
+<!-- WA FAB -->
+<a class="wafab" href="https://wa.me/5581987042832?text=Oi!%20Vi%20o%20Agenda%20Cheia%20e%20quero%20saber%20mais%20%F0%9F%98%8A" target="_blank" rel="noopener">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
   Falar no WhatsApp
-  <span class="fab-dot"></span>
+  <span class="fabdot"></span>
 </a>
 
 <script>
-// ── CONFIGURAÇÕES ─────────────────────────────────────────────
-const WA_NUMBER   = '5581987042832';
-const PIX_CHAVE   = 'jonatangd@gmail.com';
-const PIX_NOME    = 'Jonatan Agenda Cheia';
-const PIX_CIDADE  = 'Recife';
+var WA = '5581987042832';
+var PIX_KEY = 'jonatangd@gmail.com';
+var PIX_NOME = 'Jonatan Agenda Cheia';
+var PIX_CIDADE = 'Recife';
+var pixVal = 10;
 
-function waLink(msg) {
-  return 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(msg);
-}
+function waLink(msg){ return 'https://wa.me/'+WA+'?text='+encodeURIComponent(msg); }
 
-// ── PIX MODAL ─────────────────────────────────────────────────
-let pixValorAtual = 10;
-
-function openPix() {
-  document.getElementById('pixOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  gerarQR(pixValorAtual);
+// PIX
+function openPix(){ document.getElementById('pixOv').classList.add('open'); document.body.style.overflow='hidden'; gerarQR(pixVal); }
+function closePix(){ document.getElementById('pixOv').classList.remove('open'); document.body.style.overflow=''; }
+function closePixOut(e){ if(e.target===document.getElementById('pixOv')) closePix(); }
+function selVal(v,btn){
+  pixVal=v;
+  document.querySelectorAll('.vbtn').forEach(function(b){b.classList.remove('sel');});
+  btn.classList.add('sel');
+  document.getElementById('pvalDisp').textContent = v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+  gerarQR(v);
 }
-function closePix() {
-  document.getElementById('pixOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-function closePixIfOutside(e) {
-  if (e.target === document.getElementById('pixOverlay')) closePix();
-}
-function selecionarValor(valor, btn) {
-  pixValorAtual = valor;
-  document.querySelectorAll('.valor-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  document.getElementById('pixValorDisplay').textContent =
-    valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  gerarQR(valor);
-}
-
-// ── GERADOR PAYLOAD PIX EMV/BR Code (padrão BACEN) ────────────
-function tlv(id, value) {
-  return id + String(value.length).padStart(2, '0') + value;
-}
-function crc16(str) {
-  let crc = 0xFFFF;
-  for (let i = 0; i < str.length; i++) {
-    crc ^= str.charCodeAt(i) << 8;
-    for (let j = 0; j < 8; j++)
-      crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
+function tlv(id,val){ return id+String(val.length).padStart(2,'0')+val; }
+function crc16(s){
+  var c=0xFFFF;
+  for(var i=0;i<s.length;i++){
+    c^=s.charCodeAt(i)<<8;
+    for(var j=0;j<8;j++) c=(c&0x8000)?((c<<1)^0x1021):(c<<1);
   }
-  return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+  return (c&0xFFFF).toString(16).toUpperCase().padStart(4,'0');
 }
-function gerarPayloadPIX(chave, nome, cidade, valor) {
-  const mai = tlv('26', tlv('00', 'br.gov.bcb.pix') + tlv('01', chave));
-  const add = tlv('62', tlv('05', '***'));
-  const body =
-    tlv('00', '01') + mai +
-    tlv('52', '0000') + tlv('53', '986') +
-    tlv('54', valor.toFixed(2)) + tlv('58', 'BR') +
-    tlv('59', nome.slice(0, 25)) + tlv('60', cidade.slice(0, 15)) +
-    add + '6304';
-  return body + crc16(body);
+function gerarPayload(chave,nome,cidade,valor){
+  var mai=tlv('26',tlv('00','br.gov.bcb.pix')+tlv('01',chave));
+  var add=tlv('62',tlv('05','***'));
+  var body=tlv('00','01')+mai+tlv('52','0000')+tlv('53','986')+tlv('54',valor.toFixed(2))+tlv('58','BR')+tlv('59',nome.slice(0,25))+tlv('60',cidade.slice(0,15))+add+'6304';
+  return body+crc16(body);
 }
-function gerarQR(valor) {
-  const payload = gerarPayloadPIX(PIX_CHAVE, PIX_NOME, PIX_CIDADE, valor);
-  const canvas  = document.getElementById('qrCanvas');
-  const ctx     = canvas.getContext('2d');
-  const url = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&ecc=M&data=' + encodeURIComponent(payload);
-  const img = new Image();
-  img.crossOrigin = 'anonymous';
-  img.onload = () => { ctx.clearRect(0,0,180,180); ctx.drawImage(img, 0, 0, 180, 180); };
-  img.onerror = () => {
-    ctx.clearRect(0,0,180,180);
-    ctx.fillStyle = '#F5D5DC';
-    ctx.fillRect(0,0,180,180);
-    ctx.fillStyle = '#C4556A';
-    ctx.font = 'bold 13px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Use "Copiar chave"', 90, 90);
-    ctx.fillText('no app do banco', 90, 108);
+function gerarQR(valor){
+  var payload=gerarPayload(PIX_KEY,PIX_NOME,PIX_CIDADE,valor);
+  var canvas=document.getElementById('qrCanvas');
+  var ctx=canvas.getContext('2d');
+  var url='https://api.qrserver.com/v1/create-qr-code/?size=200x200&ecc=M&data='+encodeURIComponent(payload);
+  var img=new Image(); img.crossOrigin='anonymous';
+  img.onload=function(){ ctx.clearRect(0,0,180,180); ctx.drawImage(img,0,0,180,180); };
+  img.onerror=function(){
+    ctx.clearRect(0,0,180,180); ctx.fillStyle='#F5D5DC'; ctx.fillRect(0,0,180,180);
+    ctx.fillStyle='#C4556A'; ctx.font='bold 13px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('Use Copiar chave',90,90);
   };
-  img.src = url;
+  img.src=url;
 }
-function copiarChave() {
-  const btn = document.getElementById('copyBtn');
-  const done = () => {
-    btn.textContent = 'Copiado!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
-  };
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(PIX_CHAVE).then(done).catch(done);
-  } else {
-    const el = document.createElement('textarea');
-    el.value = PIX_CHAVE;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-    done();
-  }
+function copiarPix(){
+  var btn=document.getElementById('cpbtn');
+  function ok(){ btn.textContent='Copiado!'; btn.classList.add('copied'); setTimeout(function(){ btn.textContent='Copiar'; btn.classList.remove('copied'); },2000); }
+  if(navigator.clipboard){ navigator.clipboard.writeText(PIX_KEY).then(ok).catch(ok); } else { ok(); }
 }
 
-// ── DADOS DAS SEMANAS ─────────────────────────────────────────
-const weeks = [
-  {
-    id: 1, label: 'Semana 1', locked: false,
-    title: 'Preencha a semana com quem já te conhece',
-    desc: 'As estratégias mais rápidas para sair do zero não estão em novos clientes — estão na sua lista de contatos. Esta semana, trabalhamos com o que você já tem.',
-    strategies: [
-      {
-        color:'gold', label:'Estratégia 1', title:'O Resgate de Clientes Sumidos', emoji:'📱',
-        image:'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=700&q=75&auto=format&fit=crop',
-        alt:'Cabeleireira sorridente com cliente no salão',
-        content:`<p>Todo salão tem clientes que sumiram sem explicação. A maioria não foi embora com raiva — só esqueceu, teve correria ou esperava que você chamasse primeiro.</p>
-          <ul class="steps-list">
-            <li><span class="step-dot">1</span><span>Abra o WhatsApp e liste os últimos 30 clientes que não aparecem há mais de 60 dias.</span></li>
-            <li><span class="step-dot">2</span><span>Mande uma mensagem individual (não lista de transmissão) com o texto abaixo.</span></li>
-            <li><span class="step-dot">3</span><span>Aguarde. Não insista. Quem tem interesse responde nas primeiras horas.</span></li>
-          </ul>
-          <div class="highlight-box">"Oi [Nome]! Tô organizando a agenda desta semana e lembrei de você. Tem algum horário que funciona? Ainda tenho algumas vagas abertas 😊"</div>
-          <p>Em média, 30% das pessoas contatadas respondem e marcam. Uma única rodada pode preencher a semana inteira.</p>`
+// WEEKS DATA
+var weeks = [
+  { id:1, label:'Semana 1', locked:false,
+    title:'Preencha a semana com quem já te conhece',
+    desc:'As estratégias mais rápidas para sair do zero não estão em novos clientes — estão na sua lista de contatos.',
+    s:[
+      { color:'gold', label:'Estratégia 1', title:'O Resgate de Clientes Sumidos', emoji:'📱',
+        img:'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=700&q=75&auto=format&fit=crop',
+        body:'<p>Todo salão tem clientes que sumiram sem explicação. A maioria não foi embora com raiva — só esqueceu ou esperava que você chamasse primeiro.</p><ul class="slist"><li><span class="sdot">1</span><span>Liste os últimos 30 clientes que não aparecem há mais de 60 dias.</span></li><li><span class="sdot">2</span><span>Mande uma mensagem individual com o texto abaixo.</span></li><li><span class="sdot">3</span><span>Aguarde. Não insista. Quem tem interesse responde nas primeiras horas.</span></li></ul><div class="hbox">"Oi [Nome]! Tô organizando a agenda desta semana e lembrei de você. Tem algum horário que funciona? Ainda tenho algumas vagas 😊"</div><p>Em média, 30% das pessoas contatadas respondem e marcam.</p>'
       },
-      {
-        color:'rose', label:'Estratégia 2', title:'Horário VIP da Manhã', emoji:'☀️',
-        image:'https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?w=700&q=75&auto=format&fit=crop',
-        alt:'Salão de beleza claro pela manhã',
-        content:`<p>Terça, quarta e quinta entre 9h e 11h são os horários mais difíceis de preencher. A solução é criar um benefício exclusivo para esse período.</p>
-          <ul class="steps-list">
-            <li><span class="step-dot">1</span><span>Escolha um serviço que você quer vender mais (hidratação, manicure, escova).</span></li>
-            <li><span class="step-dot">2</span><span>Ofereça 15% de desconto só para agendamentos nesse horário, só nesta semana.</span></li>
-            <li><span class="step-dot">3</span><span>Publique um Story e mande para a lista de transmissão do WhatsApp.</span></li>
-          </ul>
-          <div class="highlight-box">"Horário VIP da manhã: quarta e quinta das 9h às 11h com 15% off em hidratação. Só esta semana. Chama aqui pra garantir!"</div>
-          <p>Clientes que nunca foram de manhã se tornam frequentes quando a primeira vez traz vantagem.</p>`
+      { color:'rose', label:'Estratégia 2', title:'Horário VIP da Manhã', emoji:'☀️',
+        img:'https://images.unsplash.com/photo-1470259078422-826894b933aa?w=700&q=75&auto=format&fit=crop',
+        body:'<p>Terça, quarta e quinta entre 9h e 11h são os horários mais difíceis de preencher. Crie um benefício exclusivo para esse período.</p><ul class="slist"><li><span class="sdot">1</span><span>Escolha um serviço que quer vender mais (hidratação, manicure, escova).</span></li><li><span class="sdot">2</span><span>Ofereça 15% de desconto só para agendamentos nesse horário.</span></li><li><span class="sdot">3</span><span>Publique um Story e mande para a lista de transmissão.</span></li></ul><div class="hbox">"Horário VIP da manhã: quarta e quinta das 9h às 11h com 15% off. Só esta semana!"</div>'
       },
-      {
-        color:'teal', label:'Estratégia 3', title:'O Pacote de Amiga', emoji:'👯',
-        image:'https://images.unsplash.com/photo-1560869713-da86a9ec0744?w=700&q=75&auto=format&fit=crop',
-        alt:'Duas amigas sendo atendidas no salão',
-        content:`<p>Indicação não precisa ser passiva. Você pode ativar indicações hoje mesmo com uma oferta para duplas.</p>
-          <ul class="steps-list">
-            <li><span class="step-dot">1</span><span>Crie uma oferta: "Venha com uma amiga e as duas ganham 10% off".</span></li>
-            <li><span class="step-dot">2</span><span>Mande para todas as clientes da sua lista de transmissão.</span></li>
-            <li><span class="step-dot">3</span><span>Aumente para 15% se quiser mais retorno — ainda compensa mais que horário vazio.</span></li>
-          </ul>
-          <div class="highlight-box">"Essa semana tem promoção de dupla: você e uma amiga juntas ganham 10% off cada uma. Me chama aqui pra agendar as duas 🌸"</div>
-          <p>Cada dupla que entra pode gerar mais indicações. Uma única mensagem pode preencher 4 ou 5 horários.</p>`
+      { color:'teal', label:'Estratégia 3', title:'O Pacote de Amiga', emoji:'👯',
+        img:'https://images.unsplash.com/photo-1595867818082-083862f3d630?w=700&q=75&auto=format&fit=crop',
+        body:'<p>Você pode ativar indicações hoje mesmo com uma oferta para duplas.</p><ul class="slist"><li><span class="sdot">1</span><span>Crie uma oferta: "Venha com uma amiga e as duas ganham 10% off".</span></li><li><span class="sdot">2</span><span>Mande para todas as clientes da lista de transmissão.</span></li><li><span class="sdot">3</span><span>Aumente para 15% se quiser mais retorno.</span></li></ul><div class="hbox">"Promoção de dupla: você e uma amiga juntas ganham 10% off cada uma. Me chama aqui 🌸"</div><p>Uma única mensagem pode preencher 4 ou 5 horários.</p>'
       },
-      {
-        color:'ink', label:'Estratégia 4', title:'O Story do Horário Disponível', emoji:'📸',
-        image:'https://images.unsplash.com/photo-1611091570979-6f02c56c3124?w=700&q=75&auto=format&fit=crop',
-        alt:'Pessoa postando Stories no celular',
-        content:`<p>Parece simples demais, mas funciona: poste um Story mostrando exatamente quais horários estão livres hoje e amanhã.</p>
-          <ul class="steps-list">
-            <li><span class="step-dot">1</span><span>Tire uma foto do salão arrumado com boa luz — pode ser da cadeira ou da bancada.</span></li>
-            <li><span class="step-dot">2</span><span>Escreva por cima: "Hoje ainda tenho: 14h, 15h30 e 17h. Quem quer?"</span></li>
-            <li><span class="step-dot">3</span><span>Coloque figurinha de resposta para facilitar o contato.</span></li>
-          </ul>
-          <div class="highlight-box">Mostre o salão real — não arte com Canva. O ambiente real cria desejo e urgência. Quem vê o espaço bonito e vazio sente que precisa aproveitar antes que acabe.</div>
-          <p>Faça isso todos os dias pela manhã. Em 7 dias você já tem uma audiência esperando o post diário de horários.</p>`
+      { color:'ink', label:'Estratégia 4', title:'O Story do Horário Disponível', emoji:'📸',
+        img:'https://images.unsplash.com/photo-1611091570979-6f02c56c3124?w=700&q=75&auto=format&fit=crop',
+        body:'<p>Poste um Story mostrando quais horários estão livres hoje e amanhã.</p><ul class="slist"><li><span class="sdot">1</span><span>Tire uma foto do salão arrumado com boa luz.</span></li><li><span class="sdot">2</span><span>Escreva por cima: "Hoje ainda tenho: 14h, 15h30 e 17h. Quem quer?"</span></li><li><span class="sdot">3</span><span>Coloque figurinha de resposta para facilitar o contato.</span></li></ul><div class="hbox">Mostre o salão real — não arte com Canva. O ambiente real cria desejo e urgência.</div>'
       },
-      {
-        color:'sand', label:'Estratégia 5', title:'Parceria com Comércio do Bairro', emoji:'🤝',
-        image:'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=700&q=75&auto=format&fit=crop',
-        alt:'Dois lojistas fechando parceria',
-        content:`<p>Em Recife, os bairros têm uma economia local forte: farmácias, clínicas, academias, cafeterias. Uma parceria simples pode trazer novos clientes sem gastar nada.</p>
-          <ul class="steps-list">
-            <li><span class="step-dot">1</span><span>Identifique 3 comércios próximos com público feminino similar.</span></li>
-            <li><span class="step-dot">2</span><span>Proponha uma troca: você indica seus clientes para eles, eles distribuem um cartãozinho seu.</span></li>
-            <li><span class="step-dot">3</span><span>Ofereça 10% off para quem vier indicado pela parceria.</span></li>
-          </ul>
-          <div class="highlight-box">Boas opções em Recife: clínicas de estética, pilates, lojas de roupas femininas, cafeterias e farmácias de manipulação.</div>
-          <p>Uma parceria bem feita custa só o tempo de uma visita e pode gerar clientes todo mês de forma passiva.</p>`
+      { color:'sand', label:'Estratégia 5', title:'Parceria com Comércio do Bairro', emoji:'🤝',
+        img:'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=700&q=75&auto=format&fit=crop',
+        body:'<p>Em Recife, os bairros têm economia local forte. Uma parceria pode trazer novos clientes sem gastar nada.</p><ul class="slist"><li><span class="sdot">1</span><span>Identifique 3 comércios próximos com público feminino similar.</span></li><li><span class="sdot">2</span><span>Proponha uma troca: você indica os clientes deles, eles distribuem seu cartão.</span></li><li><span class="sdot">3</span><span>Ofereça 10% off para quem vier indicado.</span></li></ul><div class="hbox">Boas opções em Recife: clínicas de estética, pilates, lojas de roupas e farmácias de manipulação.</div>'
       },
-      {
-        color:'rose-light', label:'Estratégia 6', title:'Reativação por Aniversário', emoji:'🎂',
-        image:'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=700&q=75&auto=format&fit=crop',
-        alt:'Decoração de aniversário com flores',
-        content:`<p>Aniversário é o melhor motivo para entrar em contato com quem sumiu sem parecer vendedor. Se você tem a data de nascimento das clientes, use agora.</p>
-          <ul class="steps-list">
-            <li><span class="step-dot">1</span><span>Filtre no cadastro (ou WhatsApp Business) quem faz aniversário este mês.</span></li>
-            <li><span class="step-dot">2</span><span>Mande uma mensagem personalizada com oferta de aniversariante.</span></li>
-            <li><span class="step-dot">3</span><span>Se não tiver o cadastro, comece a pedir agora para toda nova cliente.</span></li>
-          </ul>
-          <div class="highlight-box">"Oi [Nome]! Vi que você faz aniversário este mês — parabéns antecipados! 🎂 Como presente, tem 20% off em qualquer serviço durante seu mês. Me chama pra agendar!"</div>
-          <p>Clientes que voltam por benefício de aniversário costumam retomar a frequência regular depois.</p>`
+      { color:'rose-light', label:'Estratégia 6', title:'Reativação por Aniversário', emoji:'🎂',
+        img:'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=700&q=75&auto=format&fit=crop',
+        body:'<p>Aniversário é o melhor motivo para entrar em contato com quem sumiu sem parecer vendedor.</p><ul class="slist"><li><span class="sdot">1</span><span>Filtre quem faz aniversário este mês no seu cadastro.</span></li><li><span class="sdot">2</span><span>Mande uma mensagem personalizada com oferta de aniversariante.</span></li><li><span class="sdot">3</span><span>Se não tiver o cadastro, comece a pedir para toda nova cliente.</span></li></ul><div class="hbox">"Oi [Nome]! Você faz aniversário este mês 🎂 Tem 20% off em qualquer serviço durante seu mês. Me chama!"</div>'
       },
-      {
-        color:'teal-light', label:'Estratégia 7', title:'A Oferta de Quarta-Feira', emoji:'💅',
-        image:'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=700&q=75&auto=format&fit=crop',
-        alt:'Tratamento capilar sendo realizado',
-        content:`<p>Quarta-feira é o dia mais "morto" da semana na maioria dos salões. Mas ela tem enorme potencial se você criar um ritual semanal em torno dela.</p>
-          <ul class="steps-list">
-            <li><span class="step-dot">1</span><span>Escolha um serviço diferente toda quarta com condição especial.</span></li>
-            <li><span class="step-dot">2</span><span>Publique no Stories toda terça à noite anunciando a oferta do dia seguinte.</span></li>
-            <li><span class="step-dot">3</span><span>Seja consistente por pelo menos 4 semanas para criar a expectativa.</span></li>
-          </ul>
-          <div class="highlight-box">Exemplos: "Quarta da Hidratação", "Quarta do Esmaltamento", "Quarta da Sobrancelha". 15–20% de desconto só na quarta. Vagas limitadas gera urgência real.</div>
-          <p>Em 3 semanas de consistência, suas clientes começam a perguntar "o que é a quarta desta semana?" — e isso vale mais que qualquer anúncio.</p>`
+      { color:'teal-light', label:'Estratégia 7', title:'A Oferta de Quarta-Feira', emoji:'💅',
+        img:'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=700&q=75&auto=format&fit=crop',
+        body:'<p>Quarta-feira é o dia mais difícil da semana na maioria dos salões. Crie um ritual semanal em torno dela.</p><ul class="slist"><li><span class="sdot">1</span><span>Escolha um serviço diferente toda quarta com condição especial.</span></li><li><span class="sdot">2</span><span>Publique no Stories toda terça à noite anunciando a oferta.</span></li><li><span class="sdot">3</span><span>Seja consistente por pelo menos 4 semanas.</span></li></ul><div class="hbox">Exemplos: "Quarta da Hidratação", "Quarta do Esmaltamento". 15–20% de desconto só na quarta. Vagas limitadas gera urgência real.</div>'
       }
     ]
   },
-  {
-    id: 2, label: 'Semana 2', locked: false,
-    title: 'Transforme clientes em divulgadores',
-    desc: 'Nesta semana, o foco é fazer suas clientes atuais trabalharem pela divulgação do seu salão de forma natural e espontânea.',
-    strategies: [
-      {
-        color:'gold', label:'Estratégia 1', title:'O Selfie no Salão', emoji:'🤳',
-        image:'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=700&q=75&auto=format&fit=crop',
-        alt:'Mulher tirando selfie no espelho do salão',
-        content:`<p>Crie um cantinho instagramável no seu salão — não precisa de obra. Um painel simples, uma planta bonita ou uma iluminação bem feita já bastam.</p>
-          <p>Incentive as clientes a tirar foto antes de sair e marcar o perfil do salão. Ofereça um brinde pequeno (uma máscara capilar) para quem postar nos Stories.</p>
-          <div class="highlight-box">Cada cliente que posta nos Stories alcança em média 150 pessoas da mesma região — melhor que qualquer impulsionamento barato.</div>`
+  { id:2, label:'Semana 2', locked:false,
+    title:'Transforme clientes em divulgadores',
+    desc:'O foco é fazer suas clientes atuais trabalharem pela divulgação do seu salão de forma natural.',
+    s:[
+      { color:'gold', label:'Estratégia 1', title:'O Selfie no Salão', emoji:'🤳',
+        img:'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=700&q=75&auto=format&fit=crop',
+        body:'<p>Crie um cantinho instagramável — não precisa de obra. Um painel simples, uma planta bonita ou uma iluminação bem feita já bastam.</p><p>Ofereça um brinde pequeno (uma máscara capilar) para quem postar nos Stories marcando o salão.</p><div class="hbox">Cada cliente que posta alcança em média 150 pessoas da mesma região — melhor que qualquer impulsionamento barato.</div>'
       },
-      {
-        color:'teal', label:'Estratégia 2', title:'Antes e Depois no WhatsApp', emoji:'✨',
-        image:'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=700&q=75&auto=format&fit=crop',
-        alt:'Transformação de cabelo em salão',
-        content:`<p>Peça autorização e publique antes e depois no seu status do WhatsApp e no feed. Em Recife, redes de amigas são fortes — uma cliente satisfeita mostra para pelo menos 3 conhecidas.</p>
-          <div class="highlight-box">Sempre marque o bairro nos posts do Instagram. "Transformação em Boa Viagem" alcança quem está naquela área procurando salão.</div>`
+      { color:'teal', label:'Estratégia 2', title:'Antes e Depois no WhatsApp', emoji:'✨',
+        img:'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=700&q=75&auto=format&fit=crop',
+        body:'<p>Peça autorização e publique antes e depois no seu status do WhatsApp e no feed. Em Recife, uma cliente satisfeita mostra para pelo menos 3 conhecidas.</p><div class="hbox">Sempre marque o bairro nos posts. "Transformação em Boa Viagem" alcança quem está naquela área procurando salão.</div>'
       },
-      {
-        color:'rose', label:'Estratégia 3', title:'Programa de Pontos Simples', emoji:'🎁',
-        image:'https://images.unsplash.com/photo-1607082349566-187342175e2f?w=700&q=75&auto=format&fit=crop',
-        alt:'Cartões de fidelidade e recompensas',
-        content:`<p>Crie um cartão fidelidade: a cada 5 visitas, a 6ª tem 50% off. Simples, tangível e eficaz.</p>
-          <p>Cartão físico funciona melhor com clientes mais velhas. Para jovens, use o controle no WhatsApp Business com etiquetas de clientes.</p>`
+      { color:'rose', label:'Estratégia 3', title:'Programa de Pontos Simples', emoji:'🎁',
+        img:'https://images.unsplash.com/photo-1607082349566-187342175e2f?w=700&q=75&auto=format&fit=crop',
+        body:'<p>Crie um cartão fidelidade: a cada 5 visitas, a 6ª tem 50% off. Simples, tangível e eficaz.</p><p>Cartão físico funciona melhor com clientes mais velhas. Para jovens, use etiquetas no WhatsApp Business.</p>'
       },
-      {
-        color:'ink', label:'Estratégia 4', title:'Parceria com Influenciadora Local', emoji:'📲',
-        image:'https://images.unsplash.com/photo-1616587226960-4a03badbe8bf?w=700&q=75&auto=format&fit=crop',
-        alt:'Mulher gravando conteúdo de beleza',
-        content:`<p>Não precisa ser famosa. Uma micro-influenciadora de Recife com 3.000 a 10.000 seguidores locais tem mais impacto que uma nacional com 500 mil.</p>
-          <div class="highlight-box">Ofereça um serviço gratuito em troca de um Reel honesto. Peça para marcar o salão, o bairro e usar a hashtag da cidade.</div>`
+      { color:'ink', label:'Estratégia 4', title:'Parceria com Influenciadora Local', emoji:'📲',
+        img:'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=700&q=75&auto=format&fit=crop',
+        body:'<p>Uma micro-influenciadora de Recife com 3.000 a 10.000 seguidores locais tem mais impacto que uma nacional com 500 mil.</p><div class="hbox">Ofereça um serviço gratuito em troca de um Reel honesto. Peça para marcar o salão e o bairro.</div>'
       },
-      {
-        color:'sand', label:'Estratégia 5', title:'Resgate pelo Google', emoji:'🔍',
-        image:'https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?w=700&q=75&auto=format&fit=crop',
-        alt:'Pessoa pesquisando negócio local no celular',
-        content:`<p>Crie ou atualize o perfil do seu salão no Google Meu Negócio. Salões com fotos recentes e avaliações aparecem para quem pesquisa "salão perto de mim" no Recife.</p>
-          <p>Peça para cada cliente satisfeita deixar uma avaliação de 5 estrelas. 10 avaliações já colocam você na frente de 80% da concorrência local.</p>`
+      { color:'sand', label:'Estratégia 5', title:'Resgate pelo Google', emoji:'🔍',
+        img:'https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?w=700&q=75&auto=format&fit=crop',
+        body:'<p>Atualize o perfil do seu salão no Google Meu Negócio. Salões com fotos recentes e avaliações aparecem para quem pesquisa "salão perto de mim" no Recife.</p><p>10 avaliações de 5 estrelas já colocam você na frente de 80% da concorrência local.</p>'
       },
-      {
-        color:'rose-light', label:'Estratégia 6', title:'Combo de Serviços com Nome', emoji:'💆',
-        image:'https://images.unsplash.com/photo-1596704017234-0e61e41a7a6a?w=700&q=75&auto=format&fit=crop',
-        alt:'Produtos de beleza organizados no salão',
-        content:`<p>Crie combos com nomes criativos e locais. "Combo Boa Viagem", "Pacote Recifense", "Ritual do Nordeste". Nomes únicos criam identidade e facilitam o boca a boca.</p>
-          <div class="highlight-box">Quando a cliente fala "fui lá fazer o Combo Boa Viagem", ela está divulgando o nome do seu serviço — e esse nome fica na cabeça de quem ouve.</div>`
+      { color:'rose-light', label:'Estratégia 6', title:'Combo de Serviços com Nome', emoji:'💆',
+        img:'https://images.unsplash.com/photo-1596704017234-0e61e41a7a6a?w=700&q=75&auto=format&fit=crop',
+        body:'<p>Crie combos com nomes criativos e locais. "Combo Boa Viagem", "Pacote Recifense", "Ritual do Nordeste".</p><div class="hbox">Quando a cliente fala "fui lá fazer o Combo Boa Viagem", ela está divulgando o nome do seu serviço.</div>'
       },
-      {
-        color:'teal-light', label:'Estratégia 7', title:'Lista VIP no WhatsApp', emoji:'👑',
-        image:'https://images.unsplash.com/photo-1611746872915-64382b5c76da?w=700&q=75&auto=format&fit=crop',
-        alt:'Notificações do WhatsApp no celular',
-        content:`<p>Crie uma lista de transmissão "Clientes VIP" com suas melhores clientes. Mande ofertas exclusivas só para elas, 24h antes de abrir para o público geral.</p>
-          <p>O senso de exclusividade aumenta o engajamento e a fidelidade. Quem está na lista VIP se sente especial e indica o salão com mais entusiasmo.</p>`
+      { color:'teal-light', label:'Estratégia 7', title:'Lista VIP no WhatsApp', emoji:'👑',
+        img:'https://images.unsplash.com/photo-1611746872915-64382b5c76da?w=700&q=75&auto=format&fit=crop',
+        body:'<p>Crie uma lista de transmissão "Clientes VIP". Mande ofertas exclusivas 24h antes de abrir para o público geral.</p><p>O senso de exclusividade aumenta o engajamento e a fidelidade — quem está na lista VIP indica o salão com mais entusiasmo.</p>'
       }
     ]
   },
-  {
-    id: 3, label: 'Semana 3', locked: true,
-    title: 'Conquistando novas clientes em Recife',
-    desc: 'Estratégias para atrair quem ainda não conhece seu salão usando os canais digitais locais.',
-    strategies: []
-  },
-  {
-    id: 4, label: 'Semana 4', locked: true,
-    title: 'Aumentando o ticket médio',
-    desc: 'Como vender mais para quem já é sua cliente sem parecer insistente.',
-    strategies: []
-  }
+  { id:3, label:'Semana 3', locked:true, title:'Conquistando novas clientes em Recife', desc:'Estratégias para atrair quem ainda não conhece seu salão usando os canais digitais locais.', s:[] },
+  { id:4, label:'Semana 4', locked:true, title:'Aumentando o ticket médio', desc:'Como vender mais para quem já é sua cliente sem parecer insistente.', s:[] }
 ];
 
-// ── RENDERIZAÇÃO ──────────────────────────────────────────────
-let currentWeek = 1;
+var curWeek = 1;
 
-function renderWeekNav() {
-  document.getElementById('weekNav').innerHTML = weeks.map(w =>
-    `<button class="week-btn ${w.id === currentWeek ? 'active' : ''} ${w.locked ? 'locked' : ''}"
-      onclick="${w.locked ? 'void(0)' : 'showWeek(' + w.id + ')'}">${w.label}${w.locked ? ' 🔒' : ''}</button>`
-  ).join('');
+function renderNav(){
+  document.getElementById('wnav').innerHTML = weeks.map(function(w){
+    return '<button class="wbtn'+(w.id===curWeek?' active':'')+(w.locked?' locked':'')+'"'+(w.locked?'':' onclick="showWeek('+w.id+')"')+'>'+w.label+(w.locked?' 🔒':'')+'</button>';
+  }).join('');
 }
 
-function showWeek(id) {
-  currentWeek = id;
-  renderWeekNav();
-  renderContent();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+function showWeek(id){ curWeek=id; renderNav(); renderContent(); window.scrollTo({top:0,behavior:'smooth'}); }
 
-function toggleCard(idx) {
-  document.getElementById('card-' + idx).classList.toggle('open');
-}
+function toggleCard(i){ document.getElementById('c'+i).classList.toggle('open'); }
 
-function renderContent() {
-  const week = weeks.find(w => w.id === currentWeek);
-  const area = document.getElementById('contentArea');
-  document.getElementById('currentWeekBadge').textContent = week.label;
+function renderContent(){
+  var week = weeks.filter(function(w){ return w.id===curWeek; })[0];
+  var area = document.getElementById('area');
+  document.getElementById('wbadge').textContent = week.label;
 
-  if (week.locked) {
-    area.innerHTML =
-      '<div class="locked-screen">' +
-        '<div class="lock-big">🔒</div>' +
-        '<h2>' + week.title + '</h2>' +
-        '<p>' + week.desc + '<br><br>Esta semana ainda não foi liberada. Fale no WhatsApp para acesso antecipado a todas as semanas.</p>' +
-        '<a class="cta-btn" href="' + waLink('Oi! Quero acesso antecipado ao Agenda Cheia — todas as semanas!') + '" target="_blank">Quero acesso antecipado 🚀</a>' +
-      '</div>';
+  if(week.locked){
+    area.innerHTML = '<div class="lscreen"><div class="lbig">🔒</div><h2>'+week.title+'</h2><p>'+week.desc+'<br><br>Esta semana ainda não foi liberada. Fale no WhatsApp para acesso antecipado.</p><a class="btn" href="'+waLink('Oi! Quero acesso antecipado ao Agenda Cheia!')+'" target="_blank">Quero acesso antecipado 🚀</a></div>';
     return;
   }
 
-  const progressPct = Math.round((week.id / weeks.length) * 100);
+  var pct = Math.round((week.id/weeks.length)*100);
+  var cards = week.s.map(function(s,i){
+    return '<div class="card" id="c'+i+'" onclick="toggleCard('+i+')">'
+      +'<div class="cimg-wrap">'
+        +'<img class="cimg" src="'+s.img+'" alt="" loading="lazy" onload="this.classList.add(\'loaded\');this.nextElementSibling.classList.add(\'hidden\')">'
+        +'<div class="cimg-ph">'+s.emoji+'</div>'
+      +'</div>'
+      +'<div class="chdr">'
+        +'<div class="cnum '+s.color+'">'+( i+1)+'</div>'
+        +'<div class="ctw"><div class="clabel">'+s.label+'</div><div class="ctitle">'+s.title+'</div></div>'
+        +'<div class="cchev">&#x25BE;</div>'
+      +'</div>'
+      +'<div class="cbody">'+s.body+'</div>'
+      +'</div>';
+  }).join('');
 
-  const cardsHTML = week.strategies.map((s, i) =>
-    '<div class="strategy-card" id="card-' + i + '" onclick="toggleCard(' + i + ')">' +
-      '<div class="card-image-wrap">' +
-        '<img class="card-image" src="' + s.image + '" alt="' + s.alt + '" loading="lazy"' +
-          ' onload="this.classList.add(\'loaded\');this.nextElementSibling.classList.add(\'hidden\')">' +
-        '<div class="card-image-placeholder">' + s.emoji + '</div>' +
-      '</div>' +
-      '<div class="card-header">' +
-        '<div class="card-number ' + s.color + '">' + (i+1) + '</div>' +
-        '<div class="card-title-wrap">' +
-          '<div class="card-label">' + s.label + '</div>' +
-          '<div class="card-title">' + s.title + '</div>' +
-        '</div>' +
-        '<div class="card-chevron">&#x25BE;</div>' +
-      '</div>' +
-      '<div class="card-body">' + s.content + '</div>' +
-    '</div>'
-  ).join('');
-
-  area.innerHTML =
-    '<div class="week-intro">' +
-      '<div class="week-number">Semana ' + week.id + ' de ' + weeks.length + '</div>' +
-      '<div class="progress-bar-wrap"><div class="progress-bar" style="width:' + progressPct + '%"></div></div>' +
-      '<h1 class="week-title">' + week.title + '</h1>' +
-      '<p class="week-desc">' + week.desc + '</p>' +
-    '</div>' +
-    cardsHTML +
-    '<div class="cta-section">' +
-      '<h3>Valeu alguma coisa pra você?</h3>' +
-      '<p>Este material é gratuito. Se as estratégias ajudarem a preencher sua agenda, considere contribuir com qualquer valor — isso permite continuar criando conteúdo toda semana.</p>' +
-      '<button class="cta-btn" onclick="openPix()">Contribuir com qualquer valor 💛</button>' +
-      '<a class="cta-btn secondary" href="' + waLink('Oi! Tenho uma dúvida sobre as estratégias do Agenda Cheia!') + '" target="_blank">Tirar dúvida no WhatsApp →</a>' +
-    '</div>';
+  area.innerHTML = '<div class="wintro">'
+    +'<div class="wnumber">Semana '+week.id+' de '+weeks.length+'</div>'
+    +'<div class="pbar-wrap"><div class="pbar" style="width:'+pct+'%"></div></div>'
+    +'<h1 class="wtitle">'+week.title+'</h1>'
+    +'<p class="wdesc">'+week.desc+'</p>'
+    +'</div>'
+    +cards
+    +'<div class="cta">'
+      +'<h3>Valeu alguma coisa pra você?</h3>'
+      +'<p>Este material é gratuito. Se as estratégias ajudarem a preencher sua agenda, considere contribuir com qualquer valor.</p>'
+      +'<button class="btn" onclick="openPix()">Contribuir com qualquer valor 💛</button>'
+      +'<a class="btn sec" href="'+waLink('Oi! Tenho uma dúvida sobre as estratégias do Agenda Cheia!')+'" target="_blank">Tirar dúvida no WhatsApp →</a>'
+    +'</div>';
 }
 
-renderWeekNav();
+renderNav();
 renderContent();
 </script>
 </body>
