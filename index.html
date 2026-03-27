@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agenda Cheia</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--cream:#FAF7F2;--ink:#1A1209;--gold:#C8972A;--gold-light:#F0D080;--rose:#C4556A;--rose-light:#F5D5DC;--teal:#2A7B6F;--teal-light:#C8EAE5;--sand:#E8DDD0;--sand-mid:#D4C5B0;--muted:#6B5E4E;}
@@ -85,7 +86,8 @@ body{background:var(--cream);color:var(--ink);font-family:'Plus Jakarta Sans',sa
 .vbtn:hover{border-color:var(--gold);color:var(--ink);}
 .vbtn.sel{background:var(--gold);border-color:var(--gold);color:var(--ink);}
 .qr-wrap{background:#fff;border:1px solid var(--sand);border-radius:14px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:11px;margin-bottom:12px;}
-#qrCanvas{border-radius:7px;display:block;}
+#qrcode{width:180px;height:180px;display:flex;align-items:center;justify-content:center;}
+#qrcode img,#qrcode canvas{border-radius:7px;}
 .pkey-row{display:flex;align-items:center;gap:7px;background:var(--sand);border-radius:9px;padding:9px 12px;width:100%;}
 .pkey-lbl{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;flex-shrink:0;}
 .pkey-val{font-size:13px;color:var(--ink);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -115,8 +117,8 @@ body{background:var(--cream);color:var(--ink);font-family:'Plus Jakarta Sans',sa
 <div class="pix-ov" id="pixOv" onclick="closePixOut(event)">
   <div class="pix-sh">
     <div class="pix-handle"></div>
-    <button class="pix-close" onclick="closePix()">X</button>
-    <h2 class="pix-title">Contribuir com PIX</h2>
+    <button class="pix-close" onclick="closePix()">&#x2715;</button>
+    <h2 class="pix-title">Contribuir com PIX &#x1F49B;</h2>
     <p class="pix-sub">Escolha um valor ou pague o que quiser.</p>
     <div class="vgrid">
       <button class="vbtn" onclick="selVal(5,this)">R$ 5</button>
@@ -127,10 +129,10 @@ body{background:var(--cream);color:var(--ink);font-family:'Plus Jakarta Sans',sa
     <div class="qr-wrap">
       <div class="pval-lbl">Valor selecionado</div>
       <div class="pval-disp" id="pvalDisp">R$ 10,00</div>
-      <canvas id="qrCanvas" width="180" height="180"></canvas>
+      <div id="qrcode"></div>
       <div class="pkey-row">
         <span class="pkey-lbl">Chave PIX</span>
-        <span class="pkey-val"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="78121716190c19161f1c381f15191114561b1715">[email&#160;protected]</a></span>
+        <span class="pkey-val" id="pixChave"></span>
         <button class="cpbtn" id="cpbtn" onclick="copiarPix()">Copiar</button>
       </div>
     </div>
@@ -142,22 +144,65 @@ body{background:var(--cream);color:var(--ink);font-family:'Plus Jakarta Sans',sa
   Falar no WhatsApp
   <span class="fabdot"></span>
 </a>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 var WA='5581987042832';
 var PIX_KEY='jonatangd@gmail.com';
 var PIX_NOME='Jonatan Agenda Cheia';
 var PIX_CIDADE='Recife';
 var pixVal=10;
+var qrObj=null;
+
 function waLink(m){return 'https://wa.me/'+WA+'?text='+encodeURIComponent(m);}
-function openPix(){document.getElementById('pixOv').classList.add('open');document.body.style.overflow='hidden';gerarQR(pixVal);}
+
+function openPix(){
+  document.getElementById('pixOv').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.getElementById('pixChave').textContent=PIX_KEY;
+  gerarQR(pixVal);
+}
 function closePix(){document.getElementById('pixOv').classList.remove('open');document.body.style.overflow='';}
 function closePixOut(e){if(e.target===document.getElementById('pixOv'))closePix();}
-function selVal(v,btn){pixVal=v;document.querySelectorAll('.vbtn').forEach(function(b){b.classList.remove('sel');});btn.classList.add('sel');document.getElementById('pvalDisp').textContent=v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});gerarQR(v);}
+function selVal(v,btn){
+  pixVal=v;
+  document.querySelectorAll('.vbtn').forEach(function(b){b.classList.remove('sel');});
+  btn.classList.add('sel');
+  document.getElementById('pvalDisp').textContent=v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+  gerarQR(v);
+}
+
 function tlv(id,val){return id+String(val.length).padStart(2,'0')+val;}
 function crc16(s){var c=0xFFFF;for(var i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;for(var j=0;j<8;j++)c=(c&0x8000)?((c<<1)^0x1021):(c<<1);}return(c&0xFFFF).toString(16).toUpperCase().padStart(4,'0');}
-function gerarPayload(chave,nome,cidade,valor){var mai=tlv('26',tlv('00','br.gov.bcb.pix')+tlv('01',chave));var add=tlv('62',tlv('05','***'));var body=tlv('00','01')+mai+tlv('52','0000')+tlv('53','986')+tlv('54',valor.toFixed(2))+tlv('58','BR')+tlv('59',nome.slice(0,25))+tlv('60',cidade.slice(0,15))+add+'6304';return body+crc16(body);}
-function gerarQR(valor){var payload=gerarPayload(PIX_KEY,PIX_NOME,PIX_CIDADE,valor);var canvas=document.getElementById('qrCanvas');var ctx=canvas.getContext('2d');var url='https://api.qrserver.com/v1/create-qr-code/?size=200x200&ecc=M&data='+encodeURIComponent(payload);var img=new Image();img.crossOrigin='anonymous';img.onload=function(){ctx.clearRect(0,0,180,180);ctx.drawImage(img,0,0,180,180);};img.onerror=function(){ctx.clearRect(0,0,180,180);ctx.fillStyle='#F5D5DC';ctx.fillRect(0,0,180,180);ctx.fillStyle='#C4556A';ctx.font='bold 13px sans-serif';ctx.textAlign='center';ctx.fillText('Use Copiar chave',90,90);};img.src=url;}
-function copiarPix(){var btn=document.getElementById('cpbtn');function ok(){btn.textContent='Copiado!';btn.classList.add('copied');setTimeout(function(){btn.textContent='Copiar';btn.classList.remove('copied');},2000);}if(navigator.clipboard){navigator.clipboard.writeText(PIX_KEY).then(ok).catch(ok);}else{ok();}}
+function gerarPayload(chave,nome,cidade,valor){
+  var mai=tlv('26',tlv('00','br.gov.bcb.pix')+tlv('01',chave));
+  var add=tlv('62',tlv('05','***'));
+  var body=tlv('00','01')+mai+tlv('52','0000')+tlv('53','986')+tlv('54',valor.toFixed(2))+tlv('58','BR')+tlv('59',nome.slice(0,25))+tlv('60',cidade.slice(0,15))+add+'6304';
+  return body+crc16(body);
+}
+
+function gerarQR(valor){
+  var payload=gerarPayload(PIX_KEY,PIX_NOME,PIX_CIDADE,valor);
+  var div=document.getElementById('qrcode');
+  div.innerHTML='';
+  qrObj=null;
+  try{
+    qrObj=new QRCode(div,{
+      text:payload,
+      width:180,
+      height:180,
+      colorDark:'#1A1209',
+      colorLight:'#ffffff',
+      correctLevel:QRCode.CorrectLevel.M
+    });
+  }catch(e){
+    div.innerHTML='<p style="font-size:12px;color:#6B5E4E;text-align:center;padding:20px;line-height:1.6;">Use a chave PIX abaixo para pagar no app do seu banco</p>';
+  }
+}
+
+function copiarPix(){
+  var btn=document.getElementById('cpbtn');
+  function ok(){btn.textContent='Copiado!';btn.classList.add('copied');setTimeout(function(){btn.textContent='Copiar';btn.classList.remove('copied');},2000);}
+  if(navigator.clipboard){navigator.clipboard.writeText(PIX_KEY).then(ok).catch(ok);}else{ok();}
+}
 
 var W=[
 {id:1,label:'Semana 1',locked:false,title:'Preencha a semana com quem ja te conhece',desc:'As estrategias mais rapidas para sair do zero nao estao em novos clientes - estao na sua lista de contatos.',s:[
@@ -170,22 +215,22 @@ var W=[
 {color:'teal-light',label:'Estrategia 7',title:'A Oferta de Quarta-Feira',emoji:'💅',img:'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=700&q=75&auto=format&fit=crop',body:'<p>Quarta-feira e o dia mais dificil da semana. Crie um ritual semanal em torno dela.</p><ul class="slist"><li><span class="sdot">1</span><span>Escolha um servico diferente toda quarta com condicao especial.</span></li><li><span class="sdot">2</span><span>Publique no Stories toda terca a noite anunciando a oferta.</span></li><li><span class="sdot">3</span><span>Seja consistente por pelo menos 4 semanas.</span></li></ul><div class="hbox">Exemplos: Quarta da Hidratacao, Quarta do Esmaltamento. 15-20% de desconto so na quarta.</div>'}
 ]},
 {id:2,label:'Semana 2',locked:false,title:'Transforme clientes em divulgadores',desc:'O foco e fazer suas clientes atuais trabalharem pela divulgacao do seu salao de forma natural.',s:[
-{color:'gold',label:'Estrategia 1',title:'O Selfie no Salao',emoji:'🤳',img:'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=700&q=75&auto=format&fit=crop',body:'<p>Crie um cantinho instagramavel - nao precisa de obra. Um painel simples, uma planta bonita ou uma iluminacao bem feita ja bastam.</p><p>Ofereca um brinde pequeno para quem postar nos Stories marcando o salao.</p><div class="hbox">Cada cliente que posta alcanca em media 150 pessoas da mesma regiao - melhor que qualquer impulsionamento barato.</div>'},
+{color:'gold',label:'Estrategia 1',title:'O Selfie no Salao',emoji:'🤳',img:'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=700&q=75&auto=format&fit=crop',body:'<p>Crie um cantinho instagramavel - nao precisa de obra. Um painel simples, uma planta bonita ou uma iluminacao bem feita ja bastam.</p><p>Ofereca um brinde pequeno para quem postar nos Stories marcando o salao.</p><div class="hbox">Cada cliente que posta alcanca em media 150 pessoas da mesma regiao.</div>'},
 {color:'teal',label:'Estrategia 2',title:'Antes e Depois no WhatsApp',emoji:'✨',img:'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=700&q=75&auto=format&fit=crop',body:'<p>Peca autorizacao e publique antes e depois no seu status do WhatsApp e no feed. Em Recife, uma cliente satisfeita mostra para pelo menos 3 conhecidas.</p><div class="hbox">Sempre marque o bairro nos posts. Transformacao em Boa Viagem alcanca quem esta naquela area procurando salao.</div>'},
 {color:'rose',label:'Estrategia 3',title:'Programa de Pontos Simples',emoji:'🎁',img:'https://images.unsplash.com/photo-1607082349566-187342175e2f?w=700&q=75&auto=format&fit=crop',body:'<p>Crie um cartao fidelidade: a cada 5 visitas, a 6a tem 50% off. Simples, tangivel e eficaz.</p><p>Cartao fisico funciona melhor com clientes mais velhas. Para jovens, use etiquetas no WhatsApp Business.</p>'},
 {color:'ink',label:'Estrategia 4',title:'Parceria com Influenciadora Local',emoji:'📲',img:'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=700&q=75&auto=format&fit=crop',body:'<p>Uma micro-influenciadora de Recife com 3.000 a 10.000 seguidores locais tem mais impacto que uma nacional com 500 mil.</p><div class="hbox">Ofereca um servico gratuito em troca de um Reel honesto. Peca para marcar o salao e o bairro.</div>'},
-{color:'sand',label:'Estrategia 5',title:'Resgate pelo Google',emoji:'🔍',img:'https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?w=700&q=75&auto=format&fit=crop',body:'<p>Atualize o perfil do seu salao no Google Meu Negocio. Saloes com fotos e avaliacoes aparecem para quem pesquisa salao perto de mim no Recife.</p><p>10 avaliacoes de 5 estrelas ja colocam voce na frente de 80% da concorrencia local.</p>'},
+{color:'sand',label:'Estrategia 5',title:'Resgate pelo Google',emoji:'🔍',img:'https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?w=700&q=75&auto=format&fit=crop',body:'<p>Atualize o perfil do seu salao no Google Meu Negocio. 10 avaliacoes de 5 estrelas ja colocam voce na frente de 80% da concorrencia local.</p>'},
 {color:'rose-light',label:'Estrategia 6',title:'Combo de Servicos com Nome',emoji:'💆',img:'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=700&q=75&auto=format&fit=crop',body:'<p>Crie combos com nomes criativos e locais: Combo Boa Viagem, Pacote Recifense, Ritual do Nordeste.</p><div class="hbox">Quando a cliente fala fui la fazer o Combo Boa Viagem, ela esta divulgando o nome do seu servico.</div>'},
-{color:'teal-light',label:'Estrategia 7',title:'Lista VIP no WhatsApp',emoji:'👑',img:'https://images.unsplash.com/photo-1611746872915-64382b5c76da?w=700&q=75&auto=format&fit=crop',body:'<p>Crie uma lista de transmissao Clientes VIP. Mande ofertas exclusivas 24h antes de abrir para o publico geral.</p><p>O senso de exclusividade aumenta o engajamento - quem esta na lista VIP indica o salao com mais entusiasmo.</p>'}
+{color:'teal-light',label:'Estrategia 7',title:'Lista VIP no WhatsApp',emoji:'👑',img:'https://images.unsplash.com/photo-1611746872915-64382b5c76da?w=700&q=75&auto=format&fit=crop',body:'<p>Crie uma lista de transmissao Clientes VIP. Mande ofertas exclusivas 24h antes de abrir para o publico geral.</p><p>O senso de exclusividade aumenta o engajamento e a fidelidade.</p>'}
 ]},
-{id:3,label:'Semana 3',locked:false,title:'Conquiste novas clientes em Recife',desc:'Chegou a hora de expandir alem da sua lista atual. Estas estrategias atraem clientes que ainda nao te conhecem — usando o que voce ja tem.',s:[
-{color:'gold',label:'Estrategia 1',title:'Google Meu Negocio no Ponto',emoji:'📍',img:'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=700&q=75&auto=format&fit=crop',body:'<p>Quando alguem em Recife pesquisa "salao de beleza perto de mim", o Google exibe os 3 primeiros resultados do mapa. Se voce nao estiver la, esta invisivel para quem mais quer te encontrar.</p><ul class="slist"><li><span class="sdot">1</span><span>Acesse business.google.com e crie ou reivindique o perfil do seu salao.</span></li><li><span class="sdot">2</span><span>Preencha tudo: horario, telefone, endereco completo com bairro, fotos do ambiente.</span></li><li><span class="sdot">3</span><span>Adicione os servicos com preco — isso aparece direto na busca do Google.</span></li><li><span class="sdot">4</span><span>Peca para 10 clientes satisfeitas deixarem avaliacao de 5 estrelas esta semana.</span></li></ul><div class="hbox">Saloes com 10+ avaliacoes recentes aparecem no topo. Uma unica semana de foco aqui pode trazer clientes organicamente por meses.</div>'},
-{color:'rose',label:'Estrategia 2',title:'Reels que Aparecem para Quem Nao Te Segue',emoji:'🎬',img:'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=700&q=75&auto=format&fit=crop',body:'<p>O feed do Instagram so aparece para quem ja te segue. Mas os Reels sao distribuidos para pessoas que nunca ouviram falar de voce — se voce souber o que fazer.</p><ul class="slist"><li><span class="sdot">1</span><span>Grave um antes e depois em formato vertical (9:16), com boa luz natural.</span></li><li><span class="sdot">2</span><span>Nos primeiros 2 segundos mostre o resultado final — isso segura o visualizador.</span></li><li><span class="sdot">3</span><span>Legenda: "Transformacao de [servico] aqui em [bairro], Recife 📍 Agenda aberta!"</span></li><li><span class="sdot">4</span><span>Poste entre 18h e 21h nos dias de semana para maximo alcance.</span></li></ul><div class="hbox">Um Reel bem feito de antes e depois pode alcançar 5x mais pessoas que uma foto normal — e trazer seguidoras novas do seu proprio bairro.</div>'},
-{color:'teal',label:'Estrategia 3',title:'Stories com Localizacao Todo Dia',emoji:'📌',img:'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=700&q=75&auto=format&fit=crop',body:'<p>Adicionar a localizacao do bairro nos seus Stories faz com que eles aparecam no feed de localizacao do Instagram. Clientes que moram ou trabalham perto podem te descobrir por ali.</p><ul class="slist"><li><span class="sdot">1</span><span>Em todo Story, adicione o adesivo de localizacao com o nome do seu bairro.</span></li><li><span class="sdot">2</span><span>Use nomes especificos: "Boa Viagem", "Graças", "Casa Forte" — nao so "Recife".</span></li><li><span class="sdot">3</span><span>Poste pelo menos 1 Story por dia mostrando o salao ou resultado de servico.</span></li></ul><div class="hbox">Esse e o SEO local gratuito do Instagram. Leva 10 segundos a mais por Story e pode atrair clientes do proprio bairro que nunca te viram antes.</div>'},
-{color:'ink',label:'Estrategia 4',title:'Indicacao Ativa com Premio',emoji:'🎀',img:'https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=700&q=75&auto=format&fit=crop',body:'<p>Indicacao passiva e esperar a cliente falar de voce. Indicacao ativa e criar um motivo concreto para ela indicar agora, hoje, esta semana.</p><ul class="slist"><li><span class="sdot">1</span><span>Crie a oferta: "Indicou uma amiga que veio? Voce ganha 20% off na proxima visita."</span></li><li><span class="sdot">2</span><span>Comunique para todas as clientes da sua lista de transmissao.</span></li><li><span class="sdot">3</span><span>Registre cada indicacao para nao esquecer o desconto prometido.</span></li></ul><div class="hbox">Uma cliente satisfeita ja quer te indicar. Voce so precisa dar um empurrao com um beneficio concreto. O custo do desconto e menor que qualquer anuncio pago.</div>'},
-{color:'sand',label:'Estrategia 5',title:'Presenca nos Grupos de Bairro',emoji:'💬',img:'https://images.unsplash.com/photo-1611926653458-09294b3142bf?w=700&q=75&auto=format&fit=crop',body:'<p>Recife tem dezenas de grupos no WhatsApp e Facebook de bairros como Boa Viagem, Graças, Aflitos e Setúbal. Donas de casa pedem indicacao de salao nesses grupos toda semana.</p><ul class="slist"><li><span class="sdot">1</span><span>Entre nos grupos do seu bairro no Facebook e WhatsApp.</span></li><li><span class="sdot">2</span><span>Nao anuncie direto — responda quando alguem pedir indicacao de salao.</span></li><li><span class="sdot">3</span><span>Peca para clientes satisfeitas te mencionarem quando virem esse tipo de pergunta.</span></li></ul><div class="hbox">Uma mencao genuina de cliente num grupo de bairro vale mais que 10 anuncios pagos. As pessoas confiam em vizinhos — nao em propaganda.</div>'},
-{color:'rose-light',label:'Estrategia 6',title:'Parcerias com Comercio Local 2.0',emoji:'🏪',img:'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=700&q=75&auto=format&fit=crop',body:'<p>Na Semana 1 voce aprendeu a parceria basica. Agora vamos escalar: em vez de so trocar cartao, crie uma acao conjunta que gera movimento para os dois lados de verdade.</p><ul class="slist"><li><span class="sdot">1</span><span>Escolha um parceiro com publico complementar: clinica de estetica, academia feminina ou loja de roupas.</span></li><li><span class="sdot">2</span><span>Proponha uma "Semana de Parcerias": clientes de um ganham desconto no outro.</span></li><li><span class="sdot">3</span><span>Divulguem juntos nos Stories de ambos os perfis.</span></li></ul><div class="hbox">Dois perfis divulgando juntos dobra o alcance sem dobrar o trabalho. E as clientes de uma parceira ja chegam pre-dispostas a confiar em voce.</div>'},
-{color:'teal-light',label:'Estrategia 7',title:'Depoimento em Video no WhatsApp Status',emoji:'🎥',img:'https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=700&q=75&auto=format&fit=crop',body:'<p>Texto nao convence tanto quanto uma cliente real falando bem de voce. Um video curto de 20 segundos no Status do WhatsApp tem um alcance surpreendente — e e completamente gratuito.</p><ul class="slist"><li><span class="sdot">1</span><span>Peca para uma cliente satisfeita gravar um video rapido antes de sair do salao: "Oi, sou [nome], moro em [bairro] e acabei de fazer [servico] aqui. Amei o resultado!"</span></li><li><span class="sdot">2</span><span>Peca permissao para publicar e poste no seu Status do WhatsApp.</span></li><li><span class="sdot">3</span><span>Fixe tambem nos Destaques do Instagram com o titulo "Resultados".</span></li></ul><div class="hbox">O Status do WhatsApp e visto por toda a sua lista de contatos — incluindo clientes antigas que ja sumiram. Um depoimento real de uma vizinha do bairro vale mais que qualquer anuncio pago.</div>'}
+{id:3,label:'Semana 3',locked:false,title:'Conquiste novas clientes em Recife',desc:'Chegou a hora de expandir alem da sua lista atual. Estas estrategias atraem clientes que ainda nao te conhecem.',s:[
+{color:'gold',label:'Estrategia 1',title:'Google Meu Negocio no Ponto',emoji:'📍',img:'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=700&q=75&auto=format&fit=crop',body:'<p>Quando alguem em Recife pesquisa salao de beleza perto de mim, o Google exibe os 3 primeiros resultados do mapa. Se voce nao estiver la, esta invisivel.</p><ul class="slist"><li><span class="sdot">1</span><span>Acesse business.google.com e crie ou reivindique o perfil do seu salao.</span></li><li><span class="sdot">2</span><span>Preencha tudo: horario, telefone, endereco com bairro, fotos do ambiente.</span></li><li><span class="sdot">3</span><span>Adicione os servicos com preco - isso aparece direto na busca do Google.</span></li><li><span class="sdot">4</span><span>Peca para 10 clientes satisfeitas deixarem avaliacao de 5 estrelas esta semana.</span></li></ul><div class="hbox">Saloes com 10+ avaliacoes recentes aparecem no topo. Uma semana de foco aqui pode trazer clientes organicamente por meses.</div>'},
+{color:'rose',label:'Estrategia 2',title:'Reels que Aparecem para Quem Nao Te Segue',emoji:'🎬',img:'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=700&q=75&auto=format&fit=crop',body:'<p>O feed so aparece para quem ja te segue. Mas os Reels sao distribuidos para pessoas que nunca ouviram falar de voce.</p><ul class="slist"><li><span class="sdot">1</span><span>Grave um antes e depois em formato vertical 9:16, com boa luz natural.</span></li><li><span class="sdot">2</span><span>Nos primeiros 2 segundos mostre o resultado final - isso segura o visualizador.</span></li><li><span class="sdot">3</span><span>Legenda: Transformacao de [servico] aqui em [bairro], Recife. Agenda aberta!</span></li><li><span class="sdot">4</span><span>Poste entre 18h e 21h nos dias de semana para maximo alcance.</span></li></ul><div class="hbox">Um Reel bem feito de antes e depois pode alcancar 5x mais pessoas que uma foto normal.</div>'},
+{color:'teal',label:'Estrategia 3',title:'Stories com Localizacao Todo Dia',emoji:'📌',img:'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=700&q=75&auto=format&fit=crop',body:'<p>Adicionar a localizacao do bairro nos seus Stories faz com que eles aparecam no feed de localizacao do Instagram.</p><ul class="slist"><li><span class="sdot">1</span><span>Em todo Story, adicione o adesivo de localizacao com o nome do seu bairro.</span></li><li><span class="sdot">2</span><span>Use nomes especificos: Boa Viagem, Gracas, Casa Forte - nao so Recife.</span></li><li><span class="sdot">3</span><span>Poste pelo menos 1 Story por dia mostrando o salao ou resultado de servico.</span></li></ul><div class="hbox">Esse e o SEO local gratuito do Instagram. Leva 10 segundos a mais por Story e pode atrair clientes do proprio bairro.</div>'},
+{color:'ink',label:'Estrategia 4',title:'Indicacao Ativa com Premio',emoji:'🎀',img:'https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=700&q=75&auto=format&fit=crop',body:'<p>Indicacao passiva e esperar a cliente falar de voce. Indicacao ativa e criar um motivo concreto para ela indicar agora.</p><ul class="slist"><li><span class="sdot">1</span><span>Crie a oferta: Indicou uma amiga que veio? Voce ganha 20% off na proxima visita.</span></li><li><span class="sdot">2</span><span>Comunique para todas as clientes da sua lista de transmissao.</span></li><li><span class="sdot">3</span><span>Registre cada indicacao para nao esquecer o desconto prometido.</span></li></ul><div class="hbox">Uma cliente satisfeita ja quer te indicar. Voce so precisa dar um empurrao com um beneficio concreto.</div>'},
+{color:'sand',label:'Estrategia 5',title:'Presenca nos Grupos de Bairro',emoji:'💬',img:'https://images.unsplash.com/photo-1611926653458-09294b3142bf?w=700&q=75&auto=format&fit=crop',body:'<p>Recife tem dezenas de grupos no WhatsApp e Facebook de bairros como Boa Viagem, Gracas, Aflitos e Setubal. Donas de casa pedem indicacao de salao nesses grupos toda semana.</p><ul class="slist"><li><span class="sdot">1</span><span>Entre nos grupos do seu bairro no Facebook e WhatsApp.</span></li><li><span class="sdot">2</span><span>Nao anuncie direto - responda quando alguem pedir indicacao de salao.</span></li><li><span class="sdot">3</span><span>Peca para clientes satisfeitas te mencionarem quando virem esse tipo de pergunta.</span></li></ul><div class="hbox">Uma mencao genuina de cliente num grupo de bairro vale mais que 10 anuncios pagos.</div>'},
+{color:'rose-light',label:'Estrategia 6',title:'Parcerias com Comercio Local 2.0',emoji:'🏪',img:'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=700&q=75&auto=format&fit=crop',body:'<p>Na Semana 1 voce aprendeu a parceria basica. Agora vamos escalar: em vez de so trocar cartao, crie uma acao conjunta de verdade.</p><ul class="slist"><li><span class="sdot">1</span><span>Escolha um parceiro com publico complementar: clinica de estetica, academia feminina ou loja de roupas.</span></li><li><span class="sdot">2</span><span>Proponha uma Semana de Parcerias: clientes de um ganham desconto no outro.</span></li><li><span class="sdot">3</span><span>Divulguem juntos nos Stories de ambos os perfis.</span></li></ul><div class="hbox">Dois perfis divulgando juntos dobra o alcance sem dobrar o trabalho.</div>'},
+{color:'teal-light',label:'Estrategia 7',title:'Depoimento em Video no WhatsApp Status',emoji:'🎥',img:'https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=700&q=75&auto=format&fit=crop',body:'<p>Texto nao convence tanto quanto uma cliente real falando bem de voce. Um video curto de 20 segundos no Status do WhatsApp tem um alcance surpreendente - e e completamente gratuito.</p><ul class="slist"><li><span class="sdot">1</span><span>Peca para uma cliente satisfeita gravar um video rapido antes de sair do salao.</span></li><li><span class="sdot">2</span><span>Peca permissao para publicar e poste no seu Status do WhatsApp.</span></li><li><span class="sdot">3</span><span>Fixe tambem nos Destaques do Instagram com o titulo Resultados.</span></li></ul><div class="hbox">O Status do WhatsApp e visto por toda a sua lista de contatos - incluindo clientes antigas que sumiram. Um depoimento real de uma vizinha vale mais que qualquer anuncio pago.</div>'}
 ]},
 {id:4,label:'Semana 4',locked:true,title:'Aumentando o ticket medio',desc:'Como vender mais para quem ja e sua cliente sem parecer insistente.',s:[]}
 ];
@@ -195,14 +240,16 @@ function renderNav(){document.getElementById('wnav').innerHTML=W.map(function(w)
 function showWeek(id){cur=id;renderNav();renderContent();window.scrollTo({top:0,behavior:'smooth'});}
 function toggleCard(i){document.getElementById('c'+i).classList.toggle('open');}
 function renderContent(){
-var week=W.filter(function(w){return w.id===cur;})[0];
-var area=document.getElementById('area');
-document.getElementById('wbadge').textContent=week.label;
-if(week.locked){area.innerHTML='<div class="lscreen"><div class="lbig">🔒</div><h2>'+week.title+'</h2><p>'+week.desc+'<br><br>Esta semana ainda nao foi liberada. Fale no WhatsApp para acesso antecipado.</p><a class="btn" href="'+waLink('Oi! Quero acesso antecipado ao Agenda Cheia!')+'" target="_blank">Quero acesso antecipado</a></div>';return;}
-var pct=Math.round((week.id/W.length)*100);
-var cards=week.s.map(function(s,i){return'<div class="card" id="c'+i+'" onclick="toggleCard('+i+')">'+'<div class="cimg-wrap"><img class="cimg" src="'+s.img+'" alt="" loading="lazy" onload="this.classList.add(\'loaded\');this.nextElementSibling.classList.add(\'hidden\')"><div class="cimg-ph">'+s.emoji+'</div></div>'+'<div class="chdr"><div class="cnum '+s.color+'">'+(i+1)+'</div><div class="ctw"><div class="clabel">'+s.label+'</div><div class="ctitle">'+s.title+'</div></div><div class="cchev">&#9662;</div></div>'+'<div class="cbody">'+s.body+'</div></div>';}).join('');
-area.innerHTML='<div class="wintro"><div class="wnumber">Semana '+week.id+' de '+W.length+'</div><div class="pbar-wrap"><div class="pbar" style="width:'+pct+'%"></div></div><h1 class="wtitle">'+week.title+'</h1><p class="wdesc">'+week.desc+'</p></div>'+cards+'<div class="cta"><h3>Valeu alguma coisa pra voce?</h3><p>Este material e gratuito. Se as estrategias ajudarem a preencher sua agenda, considere contribuir com qualquer valor.</p><button class="btn" onclick="openPix()">ualquer valor.</p><button class="btn" onclick="openPix()">Contribuir com qualquer valor</button><a class="btn sec" href="'+waLink('Oi! Tenho uma duvida sobre as estrategias do Agenda Cheia!')+'" target="_blank">Tirar duvida no WhatsApp</a></div>';}
-renderNav();renderContent();
+  var week=W.filter(function(w){return w.id===cur;})[0];
+  var area=document.getElementById('area');
+  document.getElementById('wbadge').textContent=week.label;
+  if(week.locked){area.innerHTML='<div class="lscreen"><div class="lbig">🔒</div><h2>'+week.title+'</h2><p>'+week.desc+'<br><br>Esta semana ainda nao foi liberada. Fale no WhatsApp para acesso antecipado.</p><a class="btn" href="'+waLink('Oi! Quero acesso antecipado ao Agenda Cheia!')+'" target="_blank">Quero acesso antecipado</a></div>';return;}
+  var pct=Math.round((week.id/W.length)*100);
+  var cards=week.s.map(function(s,i){return'<div class="card" id="c'+i+'" onclick="toggleCard('+i+')">'+'<div class="cimg-wrap"><img class="cimg" src="'+s.img+'" alt="" loading="lazy" onload="this.classList.add(\'loaded\');this.nextElementSibling.classList.add(\'hidden\')"><div class="cimg-ph">'+s.emoji+'</div></div>'+'<div class="chdr"><div class="cnum '+s.color+'">'+(i+1)+'</div><div class="ctw"><div class="clabel">'+s.label+'</div><div class="ctitle">'+s.title+'</div></div><div class="cchev">&#9662;</div></div>'+'<div class="cbody">'+s.body+'</div></div>';}).join('');
+  area.innerHTML='<div class="wintro"><div class="wnumber">Semana '+week.id+' de '+W.length+'</div><div class="pbar-wrap"><div class="pbar" style="width:'+pct+'%"></div></div><h1 class="wtitle">'+week.title+'</h1><p class="wdesc">'+week.desc+'</p></div>'+cards+'<div class="cta"><h3>Valeu alguma coisa pra voce?</h3><p>Este material e gratuito. Se as estrategias ajudarem a preencher sua agenda, considere contribuir com qualquer valor.</p><button class="btn" onclick="openPix()">Contribuir com qualquer valor 💛</button><a class="btn sec" href="'+waLink('Oi! Tenho uma duvida sobre as estrategias do Agenda Cheia!')+'" target="_blank">Tirar duvida no WhatsApp</a></div>';
+}
+renderNav();
+renderContent();
 </script>
 </body>
 </html>
